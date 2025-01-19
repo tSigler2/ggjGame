@@ -3,8 +3,7 @@
 ## Development Instructions
 
 This game is developed with PyGame and Utilizing a Virtual Environment to standardize dependencies. the Pip package manager for python or another widely-used package manager will be needed for this.
-
-On Windows:
+### Windows:
 
 Step 1: Installation
 
@@ -30,8 +29,7 @@ Step 5 Deactivating the Virtual Environment
 
 `deactivate`
 
-On Mac/Linux:
-
+### Mac/Linux:
 
 Step 1: Installation
 
