@@ -1,5 +1,5 @@
 from Game import Game
-from Sprite import SpriteObj
+from Sprite.Sprite import SpriteObj
 
 class ExSprite(SpriteObj):
     def __init__(self, game, path, pos, scale, shift, velocity):
