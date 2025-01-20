@@ -16,3 +16,6 @@ class SpriteObj:
 
     def get_sprite(self):
         self.game.screen.blit(self.image, (self.x, self.y))
+
+    def update(self):
+        self.get_sprite()
