@@ -1,8 +1,8 @@
 import pygame as pg
 import sys
-from level1 import Level1
-from level2 import Level2
-from level3 import Level3
+from GameLib.level1 import Level1
+from GameLib.level2 import Level2
+from GameLib.level3 import Level3
 
 
 class Menu:
