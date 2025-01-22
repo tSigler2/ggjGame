@@ -1,6 +1,7 @@
 import pygame as pg
 import sys
 
+
 class Game:
     def __init__(self, dims, fps=60):
         pg.init()
@@ -26,15 +27,14 @@ class Game:
     def update(self):
         pg.display.flip()
         self.delta_time = self.clock.tick(self.fps)
-        pg.display.set_caption(f'GGJ PyGame Game')
-
+        pg.display.set_caption(f"GGJ PyGame Game")
 
     def run(self):
         while not self._end:
             self.check_events()
             self.update()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     game = Game((640, 480))
     game.run()
-

@@ -1,6 +1,7 @@
 import pygame as pg
 from AnimatedSprite import AnimatedSprite
 
+
 class Player(AnimatedSprite):
     def __init__(self, game):
         self.game = game
@@ -11,7 +12,7 @@ class Player(AnimatedSprite):
         speed = P_SPEED * self.game.delta_time
 
         keys = pg.key.get_pressed()
-        
+
         if keys[pg.K_w]:
             pass
         if keys[pg.K_s]:
