@@ -1,4 +1,4 @@
-from Game import Game
+from GameLib.level1 import Game
 from Sprite.Sprite import SpriteObj
 
 
