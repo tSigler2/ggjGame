@@ -5,65 +5,68 @@ import random
 
 class Level2:
     def __init__(self, dims, fps=60):
-        # Initialize PyGame and game variables
-        pg.init()
-        self.width, self.height = dims
-        self.fps = fps
-        self.screen = pg.display.set_mode(dims)
-        pg.display.set_caption("Level 2: Pole Position")
-        self.clock = pg.time.Clock()
+        pg.init()  # initialize pygame
+        self.width, self.height = dims  # set screen dimensions
+        self.fps = fps  # frames per second
+        self.screen = pg.display.set_mode(dims)  # create the display window
+        pg.display.set_caption("Level 2: Pole Position-like")  # set window title
+        self.clock = pg.time.Clock()  # for controlling game frame rate
 
         # Road properties
-        self.road_width = 300
-        self.road_color = (50, 50, 50)
-        self.grass_color = (0, 150, 0)
-        self.line_color = (255, 255, 255)
+        self.road_width = 500  # road width
+        self.road_color = (0, 0, 0)  # black road color
+        self.grass_color = (0, 150, 0)  # green grass color
+        self.line_color = (255, 255, 0)  # yellow lane markers
 
         # Player properties
-        self.car_width = 40
-        self.car_height = 70
-        self.car_x = self.width // 2  # Start centered
-        self.car_y = self.height - 100
-        self.car_color = (0, 0, 255)
-        self.car_speed = 3  # Player speed
+        self.car_width = 40  # car width
+        self.car_height = 70  # car height
+        self.car_x = self.width // 2  # start car centered
+        self.car_y = self.height - 100  # place car near bottom
+        self.car_color = (0, 0, 255)  # blue car color
+        self.car_speed = 3  # car speed
 
         # Road variables
-        self.segments = 200  # Total road segments
-        self.segment_length = 15  # Vertical height of each road segment
-        self.road = []  # List to store road segment data
-        self.scroll_position = 0  # Tracks how far the road has scrolled
-        self.player_offset = 0  # Player's horizontal offset relative to road
+        self.segments = 200  # total number of road segments
+        self.segment_length = 15  # height of each road segment
+        self.road = []  # list to store road curve data
+        self.scroll_position = 0  # tracks how far road has scrolled
+        self.player_offset = 0  # player's horizontal position relative to road
 
-        self.generate_road()
+        self.generate_road()  # generate road's curve data
 
         # Game variables
-        self.running = True
+        self.running = True  # game running state
 
     def generate_road(self):
         """Generate the road's curvature data."""
-        self.road = [0]  # Starting curve
+        self.road = [0]  # starting with no curve
         for _ in range(self.segments - 1):
-            curve_change = random.choice([-1, 0, 1])  # Random curve
-            self.road.append(self.road[-1] + curve_change)
+            curve_change = random.choice([-1, 0, 1])  # random curve direction
+            self.road.append(self.road[-1] + curve_change)  # apply curve change
 
     def draw_road(self):
         """Draw the road with perspective and curvature."""
-        base_y = self.height
-        curve_accumulation = 0  # Total horizontal curve offset
-        scale = 1  # Perspective scaling factor
+        base_y = self.height  # start drawing from the bottom
+        curve_accumulation = 0  # total horizontal curve offset
+        scale = 1  # perspective scaling factor
 
-        for i in range(len(self.road) - 1, -1, -1):
-            curve_accumulation += self.road[i]
+        for i in range(
+            len(self.road) - 1, -1, -1
+        ):  # loop through road segments in reverse
+            curve_accumulation += self.road[i]  # accumulate the curve offset
 
-            # Perspective scaling for current and next segment
-            scale_current = scale
-            scale_next = scale * 1.05
+            scale_current = scale  # current segment scale
+            scale_next = scale * 1.05  # next segment will be slightly larger
 
-            # Calculate road widths
-            road_width_current = scale_current * self.road_width
-            road_width_next = scale_next * self.road_width
+            road_width_current = (
+                scale_current * self.road_width
+            )  # calculate width of current segment
+            road_width_next = (
+                scale_next * self.road_width
+            )  # calculate width of next segment
 
-            # Calculate screen coordinates for road edges
+            # calculate x coordinates for road edges
             x1 = (
                 self.width // 2
                 + curve_accumulation
@@ -89,30 +92,13 @@ class Level2:
                 + self.player_offset * scale_next
             )
 
-            # Calculate vertical positions
-            y1 = base_y - self.segment_length * scale_current
-            y2 = base_y
+            y1 = (
+                base_y - self.segment_length * scale_current
+            )  # top of the current segment
+            y2 = base_y  # bottom of the current segment
 
-            # Draw road segment
-            pg.draw.polygon(
-                self.screen, self.road_color, [(x1, y1), (x2, y1), (x4, y2), (x3, y2)]
-            )
-            base_y = y1
-
-            # Add lane markers
-            if i % 10 == 0:
-                lane_marker_x1 = (x1 + x2) / 2
-                lane_marker_x2 = (x3 + x4) / 2
-                pg.draw.line(
-                    self.screen,
-                    self.line_color,
-                    (lane_marker_x1, y1),
-                    (lane_marker_x2, y2),
-                    2,
-                )
-
-            # Grass
-            grass_width = 1.5 * road_width_current
+            # Draw grass (background)
+            grass_width = 4 * road_width_current  # make grass wider than the road
             pg.draw.polygon(
                 self.screen,
                 self.grass_color,
@@ -124,19 +110,37 @@ class Level2:
                 ],
             )
 
-            scale *= 0.95  # Reduce scale to simulate perspective
+            # Draw road segment
+            pg.draw.polygon(
+                self.screen, self.road_color, [(x1, y1), (x2, y1), (x4, y2), (x3, y2)]
+            )
+            base_y = y1  # update base_y for next segment
+
+            # Add lane markers
+            if i % 10 == 0:  # add lane markers every 10th segment
+                lane_marker_x1 = (x1 + x2) / 2  # middle of left lane
+                lane_marker_x2 = (x3 + x4) / 2  # middle of right lane
+                pg.draw.line(
+                    self.screen,
+                    self.line_color,
+                    (lane_marker_x1, y1),
+                    (lane_marker_x2, y2),
+                    2,
+                )
+
+            scale *= 0.95  # reduce scale to simulate perspective
 
     def handle_input(self):
         """Handle player input."""
-        keys = pg.key.get_pressed()
-        if keys[pg.K_LEFT] or keys[pg.K_a]:
+        keys = pg.key.get_pressed()  # get all key states
+        if keys[pg.K_LEFT] or keys[pg.K_a]:  # move left
             self.player_offset -= self.car_speed
-        if keys[pg.K_RIGHT] or keys[pg.K_d]:
+        if keys[pg.K_RIGHT] or keys[pg.K_d]:  # move right
             self.player_offset += self.car_speed
 
     def draw_player(self):
         """Draw the player's car."""
-        car_x = self.width // 2 + self.player_offset
+        car_x = self.width // 2 + self.player_offset  # calculate car's x position
         pg.draw.rect(
             self.screen,
             self.car_color,
@@ -145,38 +149,39 @@ class Level2:
 
     def update_scroll(self):
         """Update the scrolling position of the road."""
-        self.scroll_position += 2
+        self.scroll_position += 2  # move the road down a little
         if self.scroll_position >= self.segment_length:
-            self.scroll_position -= self.segment_length
-            self.road.pop(0)
-            curve_change = random.choice([-1, 0, 1])
-            self.road.append(self.road[-1] + curve_change)
+            self.scroll_position -= (
+                self.segment_length
+            )  # reset scroll if exceeded segment length
+            self.road.pop(0)  # remove the first segment
+            curve_change = random.choice([-1, 0, 1])  # add a new curve
+            self.road.append(self.road[-1] + curve_change)  # append new curve
 
     def run(self):
         """Main game loop."""
         while self.running:
             # Event handling
             for event in pg.event.get():
-                if event.type == pg.QUIT:
+                if event.type == pg.QUIT:  # quit game if window is closed
                     self.running = False
 
             # Game logic
-            self.handle_input()
-            self.update_scroll()
+            self.handle_input()  # handle player input
+            self.update_scroll()  # update the road scroll position
 
             # Drawing
-            self.screen.fill((135, 206, 235))  # Sky blue background
-            self.draw_road()
-            self.draw_player()
+            self.screen.fill((135, 206, 235))  # fill screen with sky blue background
+            self.draw_road()  # draw the road
+            self.draw_player()  # draw the car
 
-            # Update the display
-            pg.display.flip()
-            self.clock.tick(self.fps)
+            pg.display.flip()  # update the display
+            self.clock.tick(self.fps)  # control the frame rate
 
-        pg.quit()
-        sys.exit()
+        pg.quit()  # quit pygame
+        sys.exit()  # exit the program
 
 
 if __name__ == "__main__":
-    game = Level2((800, 600))
-    game.run()
+    game = Level2((800, 600))  # initialize game with screen size
+    game.run()  # start the game loop
