@@ -30,8 +30,11 @@ class Game:
         pg.display.set_caption(f"GGJ PyGame Game")
 
     def run(self):
-        while not self._end:
-            self.check_events()
+        while True:
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    sys.exit()
             self.update()
 
 

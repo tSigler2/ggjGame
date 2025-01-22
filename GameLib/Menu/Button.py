@@ -13,12 +13,8 @@ class Button(SpriteObj):
 
     def check_overlap(self):
         pos = pg.mouse.get_pos()
-
-        if (
-            pos[0] >= self.x
-            and pos[0] <= (self.x + self.width)
-            and pos[1] >= self.y
-            and pos[1] <= (self.y + self.height)
+        if self.x <= pos[0] <= (self.x + self.IMAGE_WIDTH) and self.y <= pos[1] <= (
+            self.y + self.IMAGE_HEIGHT
         ):
             return True
         return False

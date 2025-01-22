@@ -7,11 +7,8 @@ class MoveableObj:
         self.x, self.y = pos
         self.dx, self.dy = velocity
 
-    def move(*directions):
+    def move(self, *directions):
         if "h" in directions:
             self.x += self.dx * self.game.delta_time
-        elif "v" in directions:
-            self.y += self.dy * self.game.delta_time
-        else:
-            self.x += self.dx * self.game.delta_time
+        if "v" in directions:
             self.y += self.dy * self.game.delta_time
