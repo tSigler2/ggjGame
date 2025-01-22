@@ -24,6 +24,7 @@ Step 3: Activating the Virtual Environment
 Step 4: Installing Required Dependencies
 
 `pip install pygame==2.6.1 pyinstaller==6.11.1 flake8==7.1.1 pre-commit==4.0.1`
+
 `pre-commit install`
 
 Step 5 Deactivating the Virtual Environment
