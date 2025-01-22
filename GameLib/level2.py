@@ -5,144 +5,206 @@ import random
 
 class Level2:
     def __init__(self, dims, fps=60):
-        pg.init()
+        pg.init()  # initialize pygame
         self.width, self.height = dims
         self.fps = fps
-        self.screen = pg.display.set_mode(dims)
-        pg.display.set_caption("Level 2: Pole Position")
-        self.clock = pg.time.Clock()
+        self.screen = pg.display.set_mode(dims)  # set up the screen
+        pg.display.set_caption("Level 2: Pole Position")  # game window title
+        self.clock = pg.time.Clock()  # for controlling the frame rate
 
-        # road properties
-        self.road_width = self.width // 2
-        self.road_x = (self.width - self.road_width) // 2
-        self.road_color = (50, 50, 50)
-        self.line_color = (255, 255, 255)
-        self.line_width = 5
+        # Road properties
+        self.road_width = 400  # wider road
+        self.road_color = (0, 0, 0)  # black road
+        self.grass_color = (0, 150, 0)  # green grass
+        self.line_color = (255, 255, 0)  # yellow lane markers
 
-        # player car
+        # Player properties
         self.car_width = 40
-        self.car_height = 60
-        self.car_x = self.width // 2
+        self.car_height = 70
+        self.car_x = self.width // 2  # start centered
         self.car_y = self.height - 100
-        self.car_color = (0, 0, 255)  # blue car
-        self.car_speed = 8
+        self.car_color = (0, 0, 255)
+        self.car_speed = 3  # player speed
+        self.max_offset = 150  # max offset from the road center
+        self.player_offset = 0  # player's horizontal offset
 
-        # obstacles
-        self.obstacles = []
-        self.obstacle_width = 40
-        self.obstacle_height = 60
-        self.obstacle_color = (255, 0, 0)  # red cars
-        self.obstacle_speed = 6
-        self.spawn_timer = 0
-        self.spawn_delay = 30  # frames between obstacle spawns
+        # Road variables
+        self.segments = 200  # total road segments
+        self.segment_length = 15  # height of each road segment
+        self.road = []  # list for road data
+        self.scroll_position = 0  # how far the road has scrolled
+        self.speed = 0  # player speed (acceleration and deceleration)
+        self.max_speed = 5  # max speed
+        self.acceleration_rate = 0.05  # acceleration rate
+        self.deceleration_rate = 0.03  # deceleration rate
 
-        # game variables
-        self.running = True
+        self.generate_road()  # generate the road
 
-    def spawn_obstacle(self):
-        # spawn an obstacle at a random position on the road
-        obstacle_x = random.randint(
-            self.road_x + 10, self.road_x + self.road_width - self.obstacle_width - 10
-        )
-        obstacle_y = -self.obstacle_height  # start off-screen
-        self.obstacles.append([obstacle_x, obstacle_y])
+        # Camera properties
+        self.camera_offset = 0  # camera offset for panning
 
-    def handle_input(self):
-        keys = pg.key.get_pressed()  # get the keys pressed
+        # Game variables
+        self.running = True  # game loop flag
 
-        # move the car left and right
-        if keys[pg.K_LEFT] or keys[pg.K_a]:
-            self.car_x -= self.car_speed
-        if keys[pg.K_RIGHT] or keys[pg.K_d]:
-            self.car_x += self.car_speed
+    def generate_road(self):
+        self.road = [0]  # starting curve
+        for _ in range(self.segments - 1):
+            curve_change = random.choice([-1, 0, 1])  # random curve
+            self.road.append(self.road[-1] + curve_change)
 
-        # keep the car within the road bounds
-        self.car_x = max(
-            self.road_x + 10,
-            min(self.road_x + self.road_width - self.car_width - 10, self.car_x),
-        )
+    def draw_road(self):
+        base_y = self.height
+        curve_accumulation = 0  # total horizontal curve offset
+        scale = 1  # perspective scaling factor
 
-    def update_obstacles(self):
-        # move obstacles down the screen
-        for obstacle in self.obstacles:
-            obstacle[1] += self.obstacle_speed
+        for i in range(len(self.road) - 1, -1, -1):
+            curve_accumulation += self.road[i]
 
-        # remove obstacles that are off the screen
-        self.obstacles = [obs for obs in self.obstacles if obs[1] < self.height]
+            # calculate perspective scaling for current and next segments
+            scale_current = scale
+            scale_next = scale * 1.05
 
-        # check for collisions
-        for obstacle in self.obstacles:
-            if (
-                self.car_x < obstacle[0] + self.obstacle_width
-                and self.car_x + self.car_width > obstacle[0]
-                and self.car_y < obstacle[1] + self.obstacle_height
-                and self.car_y + self.car_height > obstacle[1]
-            ):
-                self.running = False  # end the game on collision
+            # calculate road widths
+            road_width_current = scale_current * self.road_width
+            road_width_next = scale_next * self.road_width
 
-    def draw(self):
-        self.screen.fill((0, 150, 0))  # clear the screen with a green background
-
-        # draw the road
-        pg.draw.rect(
-            self.screen, self.road_color, (self.road_x, 0, self.road_width, self.height)
-        )
-
-        # draw dashed lines on the road
-        for y in range(0, self.height, 40):
-            pg.draw.line(
-                self.screen,
-                self.line_color,
-                (self.width // 2, y),
-                (self.width // 2, y + 20),
-                self.line_width,
+            # screen coordinates for road edges
+            x1 = (
+                self.width // 2
+                + curve_accumulation
+                - road_width_current / 2
+                + self.player_offset * scale_current
+                - self.camera_offset
+            )
+            x2 = (
+                self.width // 2
+                + curve_accumulation
+                + road_width_current / 2
+                + self.player_offset * scale_current
+                - self.camera_offset
+            )
+            x3 = (
+                self.width // 2
+                + curve_accumulation
+                - road_width_next / 2
+                + self.player_offset * scale_next
+                - self.camera_offset
+            )
+            x4 = (
+                self.width // 2
+                + curve_accumulation
+                + road_width_next / 2
+                + self.player_offset * scale_next
+                - self.camera_offset
             )
 
-        # draw the player's car
+            # vertical positions
+            y1 = base_y - self.segment_length * scale_current
+            y2 = base_y
+
+            # draw grass (background) - make it wider
+            grass_width = 2 * road_width_current  # wider grass
+            pg.draw.polygon(
+                self.screen,
+                self.grass_color,
+                [
+                    (x1 - grass_width, y1),
+                    (x2 + grass_width, y1),
+                    (x4 + grass_width, y2),
+                    (x3 - grass_width, y2),
+                ],
+            )
+
+            # draw road segment
+            pg.draw.polygon(
+                self.screen, self.road_color, [(x1, y1), (x2, y1), (x4, y2), (x3, y2)]
+            )
+            base_y = y1
+
+            # add lane markers every 10th segment
+            if i % 10 == 0:
+                lane_marker_x1 = (x1 + x2) / 2
+                lane_marker_x2 = (x3 + x4) / 2
+                pg.draw.line(
+                    self.screen,
+                    self.line_color,
+                    (lane_marker_x1, y1),
+                    (lane_marker_x2, y2),
+                    2,
+                )
+
+            scale *= 0.95  # reduce scale to simulate perspective
+
+    def handle_input(self):
+        keys = pg.key.get_pressed()
+        if keys[pg.K_LEFT] or keys[pg.K_a]:
+            self.player_offset -= self.car_speed  # move left
+        if keys[pg.K_RIGHT] or keys[pg.K_d]:
+            self.player_offset += self.car_speed  # move right
+        if self.player_offset < -self.max_offset:  # limit left offset
+            self.player_offset = -self.max_offset
+        elif self.player_offset > self.max_offset:  # limit right offset
+            self.player_offset = self.max_offset
+
+        # acceleration and deceleration
+        if keys[pg.K_UP] or keys[pg.K_w]:
+            if self.speed < self.max_speed:
+                self.speed += self.acceleration_rate
+        else:
+            if self.speed > 0:
+                self.speed -= self.deceleration_rate
+
+    def update_camera(self):
+        road_curve = self.road[
+            int(self.scroll_position) % len(self.road)
+        ]  # get road curve
+        self.camera_offset += road_curve * 0.1  # adjust camera based on curve
+
+        # limit camera panning
+        if self.camera_offset > 100:
+            self.camera_offset = 100
+        elif self.camera_offset < -100:
+            self.camera_offset = -100
+
+    def draw_player(self):
+        car_x = self.width // 2 + self.player_offset  # player's x position
         pg.draw.rect(
             self.screen,
             self.car_color,
-            (self.car_x, self.car_y, self.car_width, self.car_height),
+            (car_x - self.car_width // 2, self.car_y, self.car_width, self.car_height),
         )
 
-        # draw obstacles
-        for obstacle in self.obstacles:
-            pg.draw.rect(
-                self.screen,
-                self.obstacle_color,
-                (obstacle[0], obstacle[1], self.obstacle_width, self.obstacle_height),
-            )
-
-        pg.display.flip()  # update the display
+    def update_scroll(self):
+        self.scroll_position += self.speed  # update scrolling position
+        if self.scroll_position >= self.segment_length:
+            self.scroll_position -= self.segment_length
+            self.road.pop(0)  # remove old segment
+            curve_change = random.choice([-1, 0, 1])  # random curve
+            self.road.append(self.road[-1] + curve_change)  # add new segment
 
     def run(self):
         while self.running:
-            # handle events
             for event in pg.event.get():
                 if event.type == pg.QUIT:
-                    pg.quit()
-                    sys.exit()
+                    self.running = False  # quit game on close
 
             # game logic
             self.handle_input()
-            self.spawn_timer += 1
-            if self.spawn_timer >= self.spawn_delay:
-                self.spawn_obstacle()
-                self.spawn_timer = 0
-            self.update_obstacles()
+            self.update_camera()
+            self.update_scroll()
 
-            # draw everything
-            self.draw()
+            # drawing
+            self.screen.fill((135, 206, 235))  # sky blue background
+            self.draw_road()
+            self.draw_player()
 
-            self.clock.tick(self.fps)  # cap the frame rate
+            pg.display.flip()  # update display
+            self.clock.tick(self.fps)  # control frame rate
 
-        self.show_game_over()  # end the game
+        pg.quit()  # quit pygame
+        sys.exit()  # exit program
 
-    def show_game_over(self):
-        font = pg.font.Font(None, 74)  # use a default font
-        text = font.render("GAME OVER", True, (255, 0, 0))  # red game over text
-        text_rect = text.get_rect(center=(self.width // 2, self.height // 2))
-        self.screen.blit(text, text_rect)
-        pg.display.flip()
 
-        pg.time.wait(3000)  # wait for 3 seconds before exiting
+if __name__ == "__main__":
+    game = Level2((800, 600))
+    game.run()
