@@ -1,3 +1,5 @@
 venv
 .git
 .cache
+.DS_Store
+__pycache__

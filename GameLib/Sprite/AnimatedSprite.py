@@ -22,7 +22,7 @@ class AnimatedSprite(SpriteObj):
 
         for file in sorted(os.listdir(path)):
             if os.path.isfile(os.path.join(path, file)) and file != '.DS_Store':
-                img = pg.iamge.load = (path+'/'+file).convert_alpha()
+                img = pg.image.load(path+'/'+file).convert_alpha()
                 images.append(img)
 
         return images
