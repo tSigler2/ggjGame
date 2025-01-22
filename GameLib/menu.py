@@ -6,61 +6,107 @@ from level3 import Level3
 
 
 class Menu:
-    def __init__(self, dims):
-        # Initialize PyGame and menu variables
-        pg.init()
+    def __init__(
+        self, dims, enable_test_level=True
+    ):  # init menu with given dimensions and optional test level
+        pg.init()  # initialize pygame
         self.width, self.height = dims
-        self.screen = pg.display.set_mode(dims)
-        pg.display.set_caption("Main Menu")
-        self.clock = pg.time.Clock()
-        self.fps = 60
+        self.screen = pg.display.set_mode(dims)  # set window size
+        pg.display.set_caption("Main Menu")  # set window title
+        self.clock = pg.time.Clock()  # set clock to control framerate
+        self.fps = 60  # target frames per second
 
         # Menu options
-        self.font = pg.font.Font(None, 50)  # Default font
-        self.options = ["Level 1", "Level 2","Level 3", "Exit"]
-        self.current_option = 0
+        self.font = pg.font.Font(None, 50)  # default font for menu options
+        self.options = ["Level 1", "Level 2", "Level 3", "Exit"]  # menu items
+        self.current_option = 0  # current selected option index
+
+        # Test level button (controlled by enable_test_level)
+        self.test_button_text = "Test Level"
+        self.test_button_font = pg.font.Font(None, 40)  # font for test button text
+        self.test_button_width = 150  # button width
+        self.test_button_height = 50  # button height
+        self.enable_test_level = (
+            enable_test_level  # flag to enable or disable the test level button
+        )
 
     def handle_input(self):
-        # Navigate the menu
-        keys = pg.key.get_pressed()
+        # handle key and mouse input
+        keys = pg.key.get_pressed()  # get all pressed keys
 
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
+        for event in pg.event.get():  # loop through events
+            if event.type == pg.QUIT:  # quit game
                 pg.quit()
                 sys.exit()
-            if event.type == pg.KEYDOWN:
-                if event.key == pg.K_UP:
+            if event.type == pg.KEYDOWN:  # handle key presses
+                if event.key == pg.K_UP:  # move up through options
                     self.current_option = (self.current_option - 1) % len(self.options)
-                elif event.key == pg.K_DOWN:
+                elif event.key == pg.K_DOWN:  # move down through options
                     self.current_option = (self.current_option + 1) % len(self.options)
-                elif event.key == pg.K_RETURN:
-                    # Handle menu selection
+                elif event.key == pg.K_RETURN:  # handle selection
                     if self.current_option == 0:
-                        Level1((800, 600)).run()  # Start Level 1
+                        Level1((800, 600)).run()  # start level 1
                     elif self.current_option == 1:
-                        Level2((800, 600)).run()  # Start Level 2
+                        Level2((800, 600)).run()  # start level 2
                     elif self.current_option == 2:
-                        Level2((800, 600)).run()  # Start Level 3
+                        Level3((800, 600)).run()  # start level 3
                     elif self.current_option == 3:
-                        pg.quit()
+                        pg.quit()  # exit game
                         sys.exit()
 
-    def draw_menu(self):
-        self.screen.fill((0, 0, 0))  # Black background
+            # check for mouse click on the test level button if enabled
+            if (
+                event.type == pg.MOUSEBUTTONDOWN and self.enable_test_level
+            ):  # only check if enabled
+                mouse_pos = pg.mouse.get_pos()  # get mouse position
+                if self.test_button_rect.collidepoint(
+                    mouse_pos
+                ):  # check if click is inside button
+                    self.test_level()  # run test level function
 
-        # Draw menu options
+    def test_level(self):
+        # test level logic (stub for now)
+        print("Testing Level")
+
+    def draw_menu(self):
+        self.screen.fill((0, 0, 0))  # set background color to black
+
+        # draw menu options
         for i, option in enumerate(self.options):
             color = (
                 (255, 255, 0) if i == self.current_option else (255, 255, 255)
-            )  # Highlight current option
-            text = self.font.render(option, True, color)
-            text_rect = text.get_rect(center=(self.width // 2, 200 + i * 100))
-            self.screen.blit(text, text_rect)
+            )  # highlight current option
+            text = self.font.render(option, True, color)  # render text
+            text_rect = text.get_rect(
+                center=(self.width // 2, 200 + i * 100)
+            )  # position text
+            self.screen.blit(text, text_rect)  # draw text to screen
 
-        pg.display.flip()
+        # draw the "Test Level" button if enabled
+        if self.enable_test_level:
+            self.test_button_rect = pg.Rect(
+                self.width - self.test_button_width - 20,
+                self.height - self.test_button_height - 20,
+                self.test_button_width,
+                self.test_button_height,
+            )  # set button rectangle
+            pg.draw.rect(
+                self.screen, (255, 255, 0), self.test_button_rect
+            )  # draw button background
+            test_button_text = self.test_button_font.render(
+                self.test_button_text, True, (0, 0, 0)
+            )  # render button text
+            test_button_text_rect = test_button_text.get_rect(
+                center=self.test_button_rect.center
+            )  # position button text
+            self.screen.blit(
+                test_button_text, test_button_text_rect
+            )  # draw button text
+
+        pg.display.flip()  # update the screen
 
     def run(self):
         while True:
-            self.handle_input()
-            self.draw_menu()
-            self.clock.tick(self.fps)
+            self.handle_input()  # handle user input
+            self.draw_menu()  # draw the menu
+            self.clock.tick(self.fps)  # control framerate
