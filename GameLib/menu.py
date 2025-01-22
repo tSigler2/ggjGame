@@ -2,6 +2,7 @@ import pygame as pg
 import sys
 from level1 import Level1
 from level2 import Level2
+from level3 import Level3
 
 
 class Menu:
@@ -16,7 +17,7 @@ class Menu:
 
         # Menu options
         self.font = pg.font.Font(None, 50)  # Default font
-        self.options = ["Level 1", "Level 2", "Exit"]
+        self.options = ["Level 1", "Level 2","Level 3", "Exit"]
         self.current_option = 0
 
     def handle_input(self):
@@ -39,6 +40,8 @@ class Menu:
                     elif self.current_option == 1:
                         Level2((800, 600)).run()  # Start Level 2
                     elif self.current_option == 2:
+                        Level2((800, 600)).run()  # Start Level 3
+                    elif self.current_option == 3:
                         pg.quit()
                         sys.exit()
 
