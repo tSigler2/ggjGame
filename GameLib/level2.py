@@ -12,137 +12,140 @@ class Level2:
         pg.display.set_caption("Level 2: Pole Position")
         self.clock = pg.time.Clock()
 
-        # road properties
-        self.road_width = self.width // 2
-        self.road_x = (self.width - self.road_width) // 2
-        self.road_color = (50, 50, 50)
-        self.line_color = (255, 255, 255)
-        self.line_width = 5
+        # Colors
+        self.colors = {
+            "road": (50, 50, 50),
+            "grass": (0, 150, 0),
+            "line": (255, 255, 255),
+            "car": (0, 0, 255),
+            "obstacle": (255, 0, 0),
+        }
 
-        # player car
-        self.car_width = 40
-        self.car_height = 60
-        self.car_x = self.width // 2
-        self.car_y = self.height - 100
-        self.car_color = (0, 0, 255)  # blue car
-        self.car_speed = 8
+        # Road properties
+        self.road_width = 300
+        self.segment_length = 10
+        self.segments = 100
+        self.curves = [0] * self.segments
+        self.scroll = 0
+        self.generate_curves()
 
-        # obstacles
+        # Player car
+        self.car = {"width": 30, "height": 50, "x_offset": 0, "speed": 2.5}
+        self.car["y"] = self.height - 100
+
+        # Obstacles
         self.obstacles = []
-        self.obstacle_width = 40
-        self.obstacle_height = 60
-        self.obstacle_color = (255, 0, 0)  # red cars
-        self.obstacle_speed = 6
         self.spawn_timer = 0
-        self.spawn_delay = 30  # frames between obstacle spawns
+        self.spawn_delay = 60
 
-        # game variables
+        # Game variables
         self.running = True
 
+    def generate_curves(self):
+        curve_amplitude = 2
+        for i in range(self.segments):
+            if i % 20 == 0:
+                curve_amplitude = random.choice([-2, 0, 2])
+            self.curves[i] = curve_amplitude
+
+    def project_road(self):
+        for i in range(self.segments - 1, 0, -1):
+            perspective = self.height / (i + 1)
+            road_width = perspective * (self.road_width / self.height)
+            curve_offset = sum(self.curves[:i]) * perspective
+            x1 = self.width // 2 - road_width + curve_offset
+            x2 = self.width // 2 + road_width + curve_offset
+            y1 = self.height - i * self.segment_length + self.scroll
+            y2 = self.height - (i - 1) * self.segment_length + self.scroll
+
+            if y1 >= 0 and y2 >= 0:
+                pg.draw.polygon(
+                    self.screen,
+                    self.colors["road"],
+                    [(x1, y1), (x2, y1), (x2, y2), (x1, y2)],
+                )
+                if i % 10 == 0:
+                    lane_x = (x1 + x2) // 2
+                    pg.draw.line(
+                        self.screen, self.colors["line"], (lane_x, y1), (lane_x, y2), 2
+                    )
+
     def spawn_obstacle(self):
-        # spawn an obstacle at a random position on the road
-        obstacle_x = random.randint(
-            self.road_x + 10, self.road_x + self.road_width - self.obstacle_width - 10
-        )
-        obstacle_y = -self.obstacle_height  # start off-screen
-        self.obstacles.append([obstacle_x, obstacle_y])
-
-    def handle_input(self):
-        keys = pg.key.get_pressed()  # get the keys pressed
-
-        # move the car left and right
-        if keys[pg.K_LEFT] or keys[pg.K_a]:
-            self.car_x -= self.car_speed
-        if keys[pg.K_RIGHT] or keys[pg.K_d]:
-            self.car_x += self.car_speed
-
-        # keep the car within the road bounds
-        self.car_x = max(
-            self.road_x + 10,
-            min(self.road_x + self.road_width - self.car_width - 10, self.car_x),
-        )
+        if self.spawn_timer >= self.spawn_delay:
+            position = random.uniform(-0.8, 0.8)
+            self.obstacles.append([position, self.segments - 1])
+            self.spawn_timer = 0
 
     def update_obstacles(self):
-        # move obstacles down the screen
+        self.obstacles = [o for o in self.obstacles if o[1] > 0]
         for obstacle in self.obstacles:
-            obstacle[1] += self.obstacle_speed
-
-        # remove obstacles that are off the screen
-        self.obstacles = [obs for obs in self.obstacles if obs[1] < self.height]
-
-        # check for collisions
-        for obstacle in self.obstacles:
-            if (
-                self.car_x < obstacle[0] + self.obstacle_width
-                and self.car_x + self.car_width > obstacle[0]
-                and self.car_y < obstacle[1] + self.obstacle_height
-                and self.car_y + self.car_height > obstacle[1]
-            ):
-                self.running = False  # end the game on collision
-
-    def draw(self):
-        self.screen.fill((0, 150, 0))  # clear the screen with a green background
-
-        # draw the road
-        pg.draw.rect(
-            self.screen, self.road_color, (self.road_x, 0, self.road_width, self.height)
-        )
-
-        # draw dashed lines on the road
-        for y in range(0, self.height, 40):
-            pg.draw.line(
-                self.screen,
-                self.line_color,
-                (self.width // 2, y),
-                (self.width // 2, y + 20),
-                self.line_width,
+            obstacle[1] -= 1
+            obs_x = (
+                self.width // 2
+                + sum(self.curves[: obstacle[1]])
+                - (self.car["width"] / 2)
             )
+            if (
+                5 < self.segments - obstacle[1] < 15
+                and abs(self.car["x_offset"] - obs_x) < self.car["width"]
+            ):
+                self.running = False
 
-        # draw the player's car
+    def handle_input(self):
+        keys = pg.key.get_pressed()
+        if keys[pg.K_LEFT] or keys[pg.K_a]:
+            self.car["x_offset"] -= self.car["speed"]
+        if keys[pg.K_RIGHT] or keys[pg.K_d]:
+            self.car["x_offset"] += self.car["speed"]
+
+    def draw_car(self):
+        car_x = self.width // 2 + self.car["x_offset"]
         pg.draw.rect(
             self.screen,
-            self.car_color,
-            (self.car_x, self.car_y, self.car_width, self.car_height),
+            self.colors["car"],
+            (
+                car_x - self.car["width"] // 2,
+                self.car["y"] - self.car["height"],
+                self.car["width"],
+                self.car["height"],
+            ),
         )
 
-        # draw obstacles
-        for obstacle in self.obstacles:
-            pg.draw.rect(
-                self.screen,
-                self.obstacle_color,
-                (obstacle[0], obstacle[1], self.obstacle_width, self.obstacle_height),
-            )
-
-        pg.display.flip()  # update the display
+    def show_game_over(self):
+        font = pg.font.Font(None, 74)
+        text = font.render("GAME OVER", True, (255, 0, 0))
+        text_rect = text.get_rect(center=(self.width // 2, self.height // 2))
+        self.screen.blit(text, text_rect)
+        pg.display.flip()
+        pg.time.wait(3000)
 
     def run(self):
         while self.running:
-            # handle events
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     pg.quit()
                     sys.exit()
 
-            # game logic
             self.handle_input()
+            self.scroll += 2
+            if self.scroll >= self.segment_length:
+                self.scroll = 0
+                self.curves.pop(0)
+                self.curves.append(random.choice([-1, 0, 1]))
+
             self.spawn_timer += 1
-            if self.spawn_timer >= self.spawn_delay:
-                self.spawn_obstacle()
-                self.spawn_timer = 0
+            self.spawn_obstacle()
             self.update_obstacles()
 
-            # draw everything
-            self.draw()
+            self.screen.fill(self.colors["grass"])
+            self.project_road()
+            self.draw_car()
+            pg.display.flip()
+            self.clock.tick(self.fps)
 
-            self.clock.tick(self.fps)  # cap the frame rate
+        self.show_game_over()
 
-        self.show_game_over()  # end the game
 
-    def show_game_over(self):
-        font = pg.font.Font(None, 74)  # use a default font
-        text = font.render("GAME OVER", True, (255, 0, 0))  # red game over text
-        text_rect = text.get_rect(center=(self.width // 2, self.height // 2))
-        self.screen.blit(text, text_rect)
-        pg.display.flip()
-
-        pg.time.wait(3000)  # wait for 3 seconds before exiting
+if __name__ == "__main__":
+    game = Level2((800, 600))
+    game.run()
