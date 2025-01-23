@@ -3,12 +3,11 @@ import sys
 from GameLib.level1 import Level1
 from GameLib.level2 import Level2
 from GameLib.level3 import Level3
+from GameLib.level4 import Level4
 
 
 class Menu:
-    def __init__(
-        self, dims, enable_test_level=True
-    ):  # init menu with given dimensions and optional test level
+    def __init__(self, dims, enable_test_level=True):
         pg.init()  # initialize pygame
         self.width, self.height = dims
         self.screen = pg.display.set_mode(dims)  # set window size
@@ -18,7 +17,13 @@ class Menu:
 
         # Menu options
         self.font = pg.font.Font(None, 50)  # default font for menu options
-        self.options = ["Level 1", "Level 2", "Level 3", "Exit"]  # menu items
+        self.options = [
+            "Level 1",
+            "Level 2",
+            "Level 3",
+            "Level 4",
+            "Exit",
+        ]  # menu items
         self.current_option = 0  # current selected option index
 
         # Test level button (controlled by enable_test_level)
@@ -51,13 +56,13 @@ class Menu:
                     elif self.current_option == 2:
                         Level3((800, 600)).run()  # start level 3
                     elif self.current_option == 3:
+                        Level4((800, 600)).run()  # start level 4
+                    elif self.current_option == 4:
                         pg.quit()  # exit game
                         sys.exit()
 
             # check for mouse click on the test level button if enabled
-            if (
-                event.type == pg.MOUSEBUTTONDOWN and self.enable_test_level
-            ):  # only check if enabled
+            if event.type == pg.MOUSEBUTTONDOWN and self.enable_test_level:
                 mouse_pos = pg.mouse.get_pos()  # get mouse position
                 if self.test_button_rect.collidepoint(
                     mouse_pos
@@ -71,6 +76,14 @@ class Menu:
     def draw_menu(self):
         self.screen.fill((0, 0, 0))  # set background color to black
 
+        # Calculate total space for options and adjust positioning
+        total_menu_height = len(self.options) * 100  # space between menu options
+        total_button_height = (
+            self.test_button_height + 20 if self.enable_test_level else 0
+        )
+        available_space = self.height - total_menu_height - total_button_height
+        start_y = available_space // 2  # to center the menu vertically
+
         # draw menu options
         for i, option in enumerate(self.options):
             color = (
@@ -78,7 +91,7 @@ class Menu:
             )  # highlight current option
             text = self.font.render(option, True, color)  # render text
             text_rect = text.get_rect(
-                center=(self.width // 2, 200 + i * 100)
+                center=(self.width // 2, start_y + i * 100)
             )  # position text
             self.screen.blit(text, text_rect)  # draw text to screen
 
