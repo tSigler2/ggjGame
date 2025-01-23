@@ -57,3 +57,21 @@ Step 4: Installing Required Dependencies
 Step 5: Deactivating the Virtual Environment
 
 `deactivate`
+
+---
+
+## Build Instructions
+
+To build the game executable:
+
+1. Ensure you are in the `GameLib` directory:
+   ```bash
+   cd GameLib
+   ```
+
+2. Run the following command to create a standalone executable:
+   ```bash
+   pyinstaller --onefile --add-data "ball.png;." main.py
+   ```
+
+The built executable can be found in the `dist` directory. Copy all necessary files (like `ball.png`) to the same folder as the executable if needed for the game to function properly.
