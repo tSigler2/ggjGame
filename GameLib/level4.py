@@ -187,7 +187,6 @@ class Level4:
 
     # In the draw method, replace the blue circle with Sanic
 
-
     def draw(self):
         self.screen.fill((135, 206, 235))  # sky blue background
 
@@ -203,7 +202,9 @@ class Level4:
         self.screen.blit(
             self.sanic_image,
             (
-                self.player_pos[0] - self.camera_offset - self.sanic_image.get_width() // 2,
+                self.player_pos[0]
+                - self.camera_offset
+                - self.sanic_image.get_width() // 2,
                 self.player_pos[1] - self.sanic_image.get_height() // 2,
             ),
         )
