@@ -52,7 +52,7 @@ class Level4:
         self.enemies = []
         self.springs = []
 
-        # load and scale ring image to be smaller (10 times smaller)
+        # load and scale down the ring image
         self.ring_image = pg.image.load("GameLib/ring.png").convert_alpha()
         self.ring_image = pg.transform.scale(
             self.ring_image,
@@ -199,17 +199,23 @@ class Level4:
 
         # draw rotating rings
         for ring in self.rings:
-            # Rotate the ring image
-            rotated_ring = pg.transform.rotate(self.ring_image, self.ring_angle)
-            # Draw the rotated ring
+            scale_factor = 1 - 0.8 * abs(math.sin(pg.time.get_ticks() * 0.005))
+            scale_factor = max(scale_factor, 0.1)  # Prevents it from shrinking too much
+
+            # Scale the ring image
+            scaled_ring = pg.transform.scale(
+                self.ring_image,
+                (int(self.ring_image.get_width() * scale_factor), self.ring_image.get_height()),
+            )
+
+            # Draw the scaled ring
             self.screen.blit(
-                rotated_ring,
+                scaled_ring,
                 (
-                    ring[0] - self.camera_offset - rotated_ring.get_width() // 2,
-                    ring[1] - rotated_ring.get_height() // 2,
+                    ring[0] - self.camera_offset - scaled_ring.get_width() // 2,
+                    ring[1] - scaled_ring.get_height() // 2,
                 ),
             )
-            self.ring_angle += 5  # increment the rotation angle
 
         # draw enemies
         for enemy in self.enemies:
