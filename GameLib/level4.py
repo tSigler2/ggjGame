@@ -60,6 +60,13 @@ class Level4:
         )
         self.ring_angle = 0  # initial rotation angle
 
+        # Load and scale Sanic sprite in the constructor
+        self.sanic_image = pg.image.load("GameLib/sanic.png").convert_alpha()
+        self.sanic_image = pg.transform.scale(
+            self.sanic_image,
+            (50, 50),  # Adjust size to match player dimensions
+        )
+
         # parse the level matrix
         self.parse_level_matrix()
 
@@ -178,6 +185,9 @@ class Level4:
                 print("Hit an enemy! You lost all your rings!")
                 self.ring_count = 0
 
+    # In the draw method, replace the blue circle with Sanic
+
+
     def draw(self):
         self.screen.fill((135, 206, 235))  # sky blue background
 
@@ -189,12 +199,13 @@ class Level4:
                 [plat[0] - self.camera_offset, plat[1], plat[2], plat[3]],
             )
 
-        # draw player
-        pg.draw.circle(
-            self.screen,
-            (0, 0, 255),
-            [int(self.player_pos[0] - self.camera_offset), int(self.player_pos[1])],
-            20,
+        # draw player as Sanic
+        self.screen.blit(
+            self.sanic_image,
+            (
+                self.player_pos[0] - self.camera_offset - self.sanic_image.get_width() // 2,
+                self.player_pos[1] - self.sanic_image.get_height() // 2,
+            ),
         )
 
         # draw rotating rings
@@ -205,7 +216,10 @@ class Level4:
             # Scale the ring image
             scaled_ring = pg.transform.scale(
                 self.ring_image,
-                (int(self.ring_image.get_width() * scale_factor), self.ring_image.get_height()),
+                (
+                    int(self.ring_image.get_width() * scale_factor),
+                    self.ring_image.get_height(),
+                ),
             )
 
             # Draw the scaled ring
