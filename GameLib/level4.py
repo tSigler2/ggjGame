@@ -3,7 +3,7 @@ import pygame as pg
 import sys
 import math
 
-# level design matrix for a Sonic-style level
+# level design matrix
 # P = platform, R = ring, E = enemy, S = spring, _ = empty space
 LEVEL_MATRIX = [
     "_______________________RRRRRRRRRRRRR________________________________________________",

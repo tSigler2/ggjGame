@@ -7,7 +7,7 @@ from GameLib.level4 import Level4
 
 
 class Menu:
-    def __init__(self, dims, enable_test_level=True):
+    def __init__(self, dims, enable_test_level=True, padding_top=50):
         pg.init()  # initialize pygame
         self.width, self.height = dims
         self.screen = pg.display.set_mode(dims)  # set window size
@@ -34,6 +34,7 @@ class Menu:
         self.enable_test_level = (
             enable_test_level  # flag to enable or disable the test level button
         )
+        self.padding_top = padding_top  # padding from top of the screen
 
     def handle_input(self):
         # handle key and mouse input
@@ -81,8 +82,12 @@ class Menu:
         total_button_height = (
             self.test_button_height + 20 if self.enable_test_level else 0
         )
-        available_space = self.height - total_menu_height - total_button_height
-        start_y = available_space // 2  # to center the menu vertically
+        available_space = (
+            self.height - total_menu_height - total_button_height - self.padding_top
+        )
+        start_y = (
+            self.padding_top + available_space // 2
+        )  # to center the menu vertically with padding
 
         # draw menu options
         for i, option in enumerate(self.options):
