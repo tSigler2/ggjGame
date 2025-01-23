@@ -4,6 +4,7 @@ from GameLib.level1 import Level1
 from GameLib.level2 import Level2
 from GameLib.level3 import Level3
 from GameLib.level4 import Level4
+from GameLib.level5 import Level5
 
 
 class Menu:
@@ -22,6 +23,7 @@ class Menu:
             "Level 2",
             "Level 3",
             "Level 4",
+            "Level 5",
             "Exit",
         ]  # menu items
         self.current_option = 0  # current selected option index
@@ -59,6 +61,8 @@ class Menu:
                     elif self.current_option == 3:
                         Level4((800, 600)).run()  # start level 4
                     elif self.current_option == 4:
+                        Level5((800, 600)).run()  # start level 5
+                    elif self.current_option == 5:
                         pg.quit()  # exit game
                         sys.exit()
 
