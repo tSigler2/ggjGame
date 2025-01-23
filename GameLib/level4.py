@@ -1,4 +1,3 @@
-# File: GameLib\level4.py
 import pygame as pg
 import sys
 import math
@@ -20,7 +19,6 @@ LEVEL_MATRIX = [
     "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
 ]
 
-# dimensions for each grid cell
 CELL_WIDTH = 40
 CELL_HEIGHT = 40
 
@@ -53,6 +51,14 @@ class Level4:
         self.rings = []
         self.enemies = []
         self.springs = []
+
+        # load and scale ring image to be smaller (10 times smaller)
+        self.ring_image = pg.image.load("GameLib/ring.png").convert_alpha()
+        self.ring_image = pg.transform.scale(
+            self.ring_image,
+            (self.ring_image.get_width() // 10, self.ring_image.get_height() // 10),
+        )
+        self.ring_angle = 0  # initial rotation angle
 
         # parse the level matrix
         self.parse_level_matrix()
@@ -191,11 +197,19 @@ class Level4:
             20,
         )
 
-        # draw rings
+        # draw rotating rings
         for ring in self.rings:
-            pg.draw.circle(
-                self.screen, (255, 223, 0), [ring[0] - self.camera_offset, ring[1]], 10
+            # Rotate the ring image
+            rotated_ring = pg.transform.rotate(self.ring_image, self.ring_angle)
+            # Draw the rotated ring
+            self.screen.blit(
+                rotated_ring,
+                (
+                    ring[0] - self.camera_offset - rotated_ring.get_width() // 2,
+                    ring[1] - rotated_ring.get_height() // 2,
+                ),
             )
+            self.ring_angle += 5  # increment the rotation angle
 
         # draw enemies
         for enemy in self.enemies:
