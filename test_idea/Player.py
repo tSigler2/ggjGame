@@ -5,7 +5,7 @@ import pygame as pg
 from Game import Game
 
 class Player:
-    def __init__(self, game, init_sprite, animation_path, pos, animation_time, **kwargs):
+    def __init__(self, game, init_sprite, animation_path, pos, animation_time, *args):
         self.game = game
         self.sprite = pg.image.load(init_sprite).convert_alpha()
 
@@ -50,8 +50,13 @@ class Player:
             self.y += val
         return
 
-    def dump_animations(self, path, **kwargs):
-        for k, v in kwargs:
+    def dump_animations(self, path, *args):
+        for k in args:
             self.anim_paths[k] = deque()
             for img in sorted(os.listdir(path+"/"+k)):
                 self.anim_path.append(pg.image.load(path+"/"+k+"/"+img))
+
+    def update(self):
+        get_input()
+        check_anim_time()
+        draw()
