@@ -1,4 +1,5 @@
 import pygame as pg
+from Map import *
 import sys
 
 class Game:
@@ -13,6 +14,14 @@ class Game:
         self.glob_tigger = False
         pg.time.set_timer(self.glob_event, 40)
         self._end = False
+    
+    def init(self):
+        self.map = get_map(self)
+        
+    def draw_map(self):
+        for i in range(len(self.map)):
+            for j in range(len(self.map[i])):
+                self.map[i][j].draw()
 
     def check_events(self):
         self.glob_trigger = False
@@ -24,11 +33,13 @@ class Game:
                 self.glob_trigger = True
 
     def update(self):
+        self.draw_map()
         pg.display.flip()
         self.delta_time = self.clock.tick(self.fps)
-        pg.display.set_caption(f"GGJ PyGame Game")
+        pg.display.set_caption(f"{self.delta_time}")
 
     def run(self):
+        self.init()
         while not self._end:
             self.check_events()
             self.update()
