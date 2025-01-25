@@ -3,7 +3,7 @@ import sys
 from GameLib.level1 import Level1
 from GameLib.level2 import Level2
 from GameLib.level3 import Level3
-from Menu.Button import Button
+from GameLib.Menu.Button import Button
 
 class Menu:
     def __init__(
@@ -77,38 +77,6 @@ class Menu:
 
         self.start_button.draw(self.screen)
         self.options_button.draw(self.screen)
-
-        # draw menu options
-        for i, option in enumerate(self.options):
-            color = (
-                (255, 255, 0) if i == self.current_option else (255, 255, 255)
-            )  # highlight current option
-            text = self.font.render(option, True, color)  # render text
-            text_rect = text.get_rect(
-                center=(self.width // 2, 200 + i * 100)
-            )  # position text
-            self.screen.blit(text, text_rect)  # draw text to screen
-
-        # draw the "Test Level" button if enabled
-        if self.enable_test_level:
-            self.test_button_rect = pg.Rect(
-                self.width - self.test_button_width - 20,
-                self.height - self.test_button_height - 20,
-                self.test_button_width,
-                self.test_button_height,
-            )  # set button rectangle
-            pg.draw.rect(
-                self.screen, (255, 255, 0), self.test_button_rect
-            )  # draw button background
-            test_button_text = self.test_button_font.render(
-                self.test_button_text, True, (0, 0, 0)
-            )  # render button text
-            test_button_text_rect = test_button_text.get_rect(
-                center=self.test_button_rect.center
-            )  # position button text
-            self.screen.blit(
-                test_button_text, test_button_text_rect
-            )  # draw button text
 
         pg.display.flip()  # update the screen
 
