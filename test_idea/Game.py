@@ -1,6 +1,6 @@
 import pygame as pg
-from Map import *
-from Player import Player
+from test_idea.Map import *
+from test_idea.Player import Player
 import sys
 
 class Game:
@@ -17,7 +17,8 @@ class Game:
         self._end = False
     
     def init(self):
-        self.map = get_map(self)
+        self.map = Map()
+        self.map.get_map()
         self.player = Player(self, "../GameLib/ball.png", "Assets", (self.map[0][0].x, self.map[0][0].y), 120, [0, 0], "", "")
         
     def draw_map(self):
