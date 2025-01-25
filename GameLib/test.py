@@ -1,33 +1,98 @@
 import pygame as pg
-from GameLib.Enemy import Enemy
 import sys
+from GameLib.enemy import Enemy
 
-class Test:
-    def __init__(self, dims, fps=60):
-        pg.init()
-        self.width, self.height = dims
-        self.fps = fps
-        self.screen = pg.display.set_mode(dims)
-        pg.display.set_caption("Test")
-        self.clock = pg.time.Clock()
+# Path Debugging Toggle
+show_path = False  # set this to False if you want to hide the path
 
-        self.enemy = Enemy(350, 200, 150, 50)
-    
+# Setup Pygame
+pg.init()
 
-    def update(self):
-        self.screen.fill((0, 0, 0))  # this sets the background color (black is 0, 0, 0)
-        self.enemy.draw(self.screen)
+# Display
+WIDTH, HEIGHT = 800, 600
+screen = pg.display.set_mode((WIDTH, HEIGHT))
+pg.display.set_caption("Enemy Pathfinding Test")
 
+# Map Configuration
+tile_size = 40
+map_matrix = [
+    ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"],
+    ["0", "M", "M", "M", "M", "M", "M", "M", "M", "M", "0"],
+    ["0", "M", "0", "0", "0", "0", "0", "0", "0", "M", "0"],
+    ["0", "M", "0", "H", "H", "H", "M", "M", "0", "M", "0"],
+    ["0", "M", "0", "H", "H", "H", "M", "0", "0", "M", "0"],
+    ["0", "M", "0", "H", "H", "H", "M", "0", "M", "M", "0"],
+    ["0", "M", "0", "0", "0", "0", "M", "0", "0", "M", "0"],
+    ["0", "M", "M", "M", "0", "0", "M", "M", "0", "M", "0"],
+    ["0", "0", "0", "M", "M", "M", "M", "0", "0", "0", "0"],
+    ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"],
+    ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"],
+]
 
-        pg.display.flip()  # this refreshes the display
+colors = {
+    "0": (194, 178, 128),  # Sand (light beige)
+    "H": (139, 69, 19),  # House (brown))
+    "M": (255, 0, 255),  # Coral (magenta)
+}
 
-    def run(self):
-        while True:
-            for event in pg.event.get():  # this handles events like quitting
-                if event.type == pg.QUIT:
-                    pg.quit()
-                    sys.exit()
+# Setup Enemy
+start_position = (0, 0)
+goal = (4, 4)
+# enemy = Enemy(start_position, goal, map_matrix)
+enemies = [
+    Enemy((0, 0), (4, 4), map_matrix, enemy_speed=6),  # Slow
+    Enemy((0, 0), (4, 4), map_matrix, enemy_speed=3),  # Medium
+    Enemy((0, 0), (4, 4), map_matrix, enemy_speed=1),  # Fast
+]
+# Game Loop
+clock = pg.time.Clock()
+running = True
+while running:
+    screen.fill((0, 0, 0))  # Clear screen
 
-            self.update()  # this handles the update game state
+    # Draw Map
+    for row_idx, row in enumerate(map_matrix):
+        for col_idx, tile in enumerate(row):
+            x, y = col_idx * tile_size, row_idx * tile_size
+            pg.draw.rect(
+                screen,
+                colors[tile],
+                (x, y, tile_size, tile_size),
+            )
 
-            self.clock.tick(self.fps)  # this caps the frame rate
+    # Move and Draw Enemies
+    for enemy in enemies:
+        enemy.move()
+
+        # Draw Path (for Debugging)
+        if show_path:
+            for px, py in enemy.path:
+                pg.draw.circle(
+                    screen,
+                    (0, 255, 0),  # Green for path
+                    (px * tile_size + tile_size // 2, py * tile_size + tile_size // 2),
+                    tile_size // 8,
+                )
+
+        # Draw Enemy
+        ex, ey = enemy.get_position()
+        pg.draw.circle(
+            screen,
+            (255, 255, 255),  # White for enemy
+            (ex * tile_size + tile_size // 2, ey * tile_size + tile_size // 2),
+            tile_size // 4,
+        )
+
+    # Event Handling
+    for event in pg.event.get():
+        if event.type == pg.QUIT:
+            running = False
+
+    # Update Display
+    pg.display.flip()
+
+    # Frame rate
+    clock.tick(10)
+
+pg.quit()
+sys.exit()
