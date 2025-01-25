@@ -1,3 +1,4 @@
+# File: GameLib\settings.py
 import pygame as pg
 import sys
 from GameLib.Menu.Button import Button
@@ -18,9 +19,17 @@ class SettingsMenu:
         # Buttons
         self.back_button = Button(350, 500, 150, 50)
 
-        # Settings options (examples: toggle and sliders)
+        # Sound slider
+        self.slider_x = 300
+        self.slider_y = 200
+        self.slider_width = 200
+        self.slider_height = 10
+        self.slider_knob_x = self.slider_x + 100  # Default position of knob
+        self.slider_knob_radius = 10
+        self.sound_volume = 0.5  # Default volume (0.0 to 1.0)
+
+        # Difficulty setting
         self.settings = {
-            "Sound": True,  # True = On, False = Off
             "Difficulty": "Normal",  # Easy, Normal, Hard
         }
         self.difficulty_levels = ["Easy", "Normal", "Hard"]
@@ -28,8 +37,7 @@ class SettingsMenu:
             self.settings["Difficulty"]
         )
 
-        # Button rectangles for toggle and cycling settings
-        self.sound_toggle_button = Button(350, 200, 150, 50)
+        # Button for cycling difficulty
         self.difficulty_button = Button(350, 300, 150, 50)
 
     def handle_input(self):
@@ -43,10 +51,7 @@ class SettingsMenu:
             elif event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     if self.back_button.isClicked((mx, my)):
-                        return "main_menu"  # Signal to return to main menu
-
-                    if self.sound_toggle_button.isClicked((mx, my)):
-                        self.settings["Sound"] = not self.settings["Sound"]
+                        return "main_menu"
 
                     if self.difficulty_button.isClicked((mx, my)):
                         self.current_difficulty_index = (
@@ -56,13 +61,46 @@ class SettingsMenu:
                             self.current_difficulty_index
                         ]
 
+            elif event.type == pg.MOUSEBUTTONUP:
+                if event.button == 1 and self.is_mouse_over_slider(mx, my):
+                    # Update the knob position and sound volume
+                    self.slider_knob_x = max(
+                        self.slider_x,
+                        min(mx, self.slider_x + self.slider_width),
+                    )
+                    self.sound_volume = (
+                        self.slider_knob_x - self.slider_x
+                    ) / self.slider_width
+                    print(f"Sound Volume: {self.sound_volume:.2f}")
+
+    def is_mouse_over_slider(self, mx, my):
+        """Check if the mouse is over the slider knob."""
+        return (
+            self.slider_x <= mx <= self.slider_x + self.slider_width
+            and self.slider_y - self.slider_knob_radius
+            <= my
+            <= self.slider_y + self.slider_knob_radius
+        )
+
     def draw_settings_menu(self):
         self.screen.fill((30, 30, 30))
 
         # Draw buttons
         self.back_button.draw(self.screen)
-        self.sound_toggle_button.draw(self.screen)
         self.difficulty_button.draw(self.screen)
+
+        # Draw slider
+        pg.draw.rect(
+            self.screen,
+            (200, 200, 200),
+            (self.slider_x, self.slider_y, self.slider_width, self.slider_height),
+        )
+        pg.draw.circle(
+            self.screen,
+            (255, 255, 255),
+            (self.slider_knob_x, self.slider_y + self.slider_height // 2),
+            self.slider_knob_radius,
+        )
 
         # Draw text
         self.draw_text(
@@ -74,12 +112,12 @@ class SettingsMenu:
             50,
         )
         self.draw_text(
-            f"Sound: {'On' if self.settings['Sound'] else 'Off'}",
+            f"Sound Volume: {int(self.sound_volume * 100)}%",
             self.font,
             (255, 255, 255),
             self.screen,
-            365,
-            215,
+            self.slider_x,
+            self.slider_y - 30,
         )
         self.draw_text(
             f"Difficulty: {self.settings['Difficulty']}",
