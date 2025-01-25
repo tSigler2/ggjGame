@@ -77,7 +77,7 @@ class Menu:
         self.quit_button.draw(self.screen)
 
 
-        self.draw_text('Glasscord GGJ Game 2025', self.font, (255, 255, 255), self.screen, int(self.width  / 2) - 160, 20)
+        self.draw_text('Bubble Blast Deluxe Unlimited Edition ft. Glasscord Team', self.font, (255, 255, 255), self.screen, int(self.width  / 2) - 393, 20)
         self.draw_text('Start Game', self.font, (255, 255, 255), self.screen, 155, 415)
         self.draw_text('Options', self.font, (255, 255, 255), self.screen, 375, 415)
         self.draw_text('Quit', self.font, (255, 255, 255), self.screen, 595, 415)
