@@ -5,6 +5,7 @@ from Player import *
 from house import *
 from Menu.Button import Button
 from Map import *
+from Util.Sound import SoundManager
 import os
 
 
@@ -67,6 +68,10 @@ class Game:
             [5, 5],
             "xxx"
         )
+
+        self.sound_manager = SoundManager("GameLib/Assets/sounds")
+        self.sound_manager.load_music("TownTheme.mp3")
+        self.sound_manager.play_music("TownTheme.mp3")
 
     def check_events(self):
         self.glob_trigger = False

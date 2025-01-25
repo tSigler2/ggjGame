@@ -2,9 +2,9 @@ import pygame as pg
 import sys
 from GameLib.settings import UI
 from level1 import Level1
-from Game import Game
+from GameLib.Game import Game
 from GameLib.test import Test
-from GameLib.Menu.Button import Button
+from Menu.Button import Button
 from GameLib.settings import SettingsMenu
 
 
