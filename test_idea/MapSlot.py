@@ -1,5 +1,6 @@
 import pygame as pg
 
+
 class Space:
     def __init__(self, game, file, coords, dims):
         self.game = game
@@ -21,7 +22,7 @@ class Space:
         return self.occupant
 
     def set_occupant(self, occupant):
-        self.occupant = occupent
+        self.occupant = occupant
         if not self.occupied:
             self.occupied = True
 
