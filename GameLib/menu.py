@@ -3,7 +3,7 @@ import sys
 from GameLib.level1 import Level1
 from GameLib.level2 import Level2
 from GameLib.level3 import Level3
-
+from Menu.Button import Button
 
 class Menu:
     def __init__(
@@ -29,6 +29,10 @@ class Menu:
         self.enable_test_level = (
             enable_test_level  # flag to enable or disable the test level button
         )
+
+        self.start_button = Button(150, 400, 150, 50)
+        self.options_button = Button(350, 400, 150, 50)
+
 
     def handle_input(self):
         # handle key and mouse input
@@ -70,6 +74,9 @@ class Menu:
 
     def draw_menu(self):
         self.screen.fill((0, 0, 0))  # set background color to black
+
+        self.start_button.draw(self.screen)
+        self.options_button.draw(self.screen)
 
         # draw menu options
         for i, option in enumerate(self.options):
