@@ -95,8 +95,6 @@ class Game:
                 self.map[i][j].draw()
             
     def update(self):
-        self.player.update()
-        self.draw_map()
         pg.display.flip()
         self.delta_time = self.clock.tick(self.fps)
         pg.display.set_caption(f'GGJ PyGame Game')
@@ -107,8 +105,8 @@ class Game:
 
         while self.running:
             self.screen.fill((0,0,0))
-            self.draw_text('Press ESC for Main Menu', self.font, (255, 255, 255), self.screen, int(self.width  / 2) - 160, 20)
-
+            self.draw_map()
+            self.player.update()
             self.check_events()
             self.update()
 
@@ -125,11 +123,9 @@ class Game:
             
     def run(self):
         self.init()
-        while not self._end:
-            self.check_events()
-            self.main_menu()
+        self.main_menu()
 
 if __name__ == '__main__':
-    game = Game((640, 480))
+    game = Game((1280, 720))
     game.run()
 
