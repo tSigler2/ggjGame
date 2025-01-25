@@ -2,6 +2,9 @@ import pygame as pg
 import sys
 from GameLib.enemy import Enemy
 
+# Path Debugging Toggle
+show_path = False  # set this to False if you want to hide the path
+
 # Setup Pygame
 pg.init()
 
@@ -35,8 +38,12 @@ colors = {
 # Setup Enemy
 start_position = (0, 0)
 goal = (4, 4)
-enemy = Enemy(start_position, goal, map_matrix)
-
+# enemy = Enemy(start_position, goal, map_matrix)
+enemies = [
+    Enemy((0, 0), (4, 4), map_matrix, enemy_speed=6),  # Slow
+    Enemy((0, 0), (4, 4), map_matrix, enemy_speed=3),  # Medium
+    Enemy((0, 0), (4, 4), map_matrix, enemy_speed=1),  # Fast
+]
 # Game Loop
 clock = pg.time.Clock()
 running = True
@@ -53,16 +60,28 @@ while running:
                 (x, y, tile_size, tile_size),
             )
 
-    # Move Enemy
-    enemy.move()
-    enemy_position = enemy.get_position()
-    ex, ey = enemy_position
-    pg.draw.circle(
-        screen,
-        (255, 255, 255),  # White for enemy
-        (ex * tile_size + tile_size // 2, ey * tile_size + tile_size // 2),
-        tile_size // 4,
-    )
+    # Move and Draw Enemies
+    for enemy in enemies:
+        enemy.move()
+
+        # Draw Path (for Debugging)
+        if show_path:
+            for px, py in enemy.path:
+                pg.draw.circle(
+                    screen,
+                    (0, 255, 0),  # Green for path
+                    (px * tile_size + tile_size // 2, py * tile_size + tile_size // 2),
+                    tile_size // 8,
+                )
+
+        # Draw Enemy
+        ex, ey = enemy.get_position()
+        pg.draw.circle(
+            screen,
+            (255, 255, 255),  # White for enemy
+            (ex * tile_size + tile_size // 2, ey * tile_size + tile_size // 2),
+            tile_size // 4,
+        )
 
     # Event Handling
     for event in pg.event.get():
