@@ -69,7 +69,7 @@ class Player:
                     self.game.map[self.coords[0]][self.coords[1]].y,
                 )
             )
-        elif (
+        if (
             keys[pg.K_s]
             and self.coords[1] < 10
             and (curr_time - self.prev_move_time) >= self.delta_move
@@ -82,7 +82,7 @@ class Player:
                     self.game.map[self.coords[0]][self.coords[1]].y,
                 )
             )
-        elif (
+        if (
             keys[pg.K_d]
             and self.coords[0] < 10
             and (curr_time - self.prev_move_time) >= self.delta_move
@@ -95,7 +95,7 @@ class Player:
                     self.game.map[self.coords[0]][self.coords[1]].y,
                 )
             )
-        elif (
+        if (
             keys[pg.K_a]
             and self.coords[0] > 0
             and (curr_time - self.prev_move_time) >= self.delta_move
