@@ -1,5 +1,6 @@
 import pygame as pg
 import sys
+from GameLib.settings import UI
 from GameLib.level1 import Level1
 from GameLib.test import Test
 from GameLib.Menu.Button import Button
@@ -14,6 +15,7 @@ class Menu:
         pg.display.set_caption("Main Menu")
         self.clock = pg.time.Clock()
         self.fps = 60
+        UI.init(self)
         self.font = pg.font.Font(None, 36)  # Default font with size 36
 
         # Button dimensions and spacing
