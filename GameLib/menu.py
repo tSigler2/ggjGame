@@ -36,8 +36,13 @@ class Menu:
 
 
     def handle_input(self):
+         
+        mx, my = pg.mouse.get_pos()
+        self.click = False
+
         # handle key and mouse input
-        keys = pg.key.get_pressed()  # get all pressed keys
+        if self.start_button.isClicked((mx, my), self.click):
+            Level1.run()
 
         for event in pg.event.get():  # loop through events
             if event.type == pg.QUIT:  # quit game
