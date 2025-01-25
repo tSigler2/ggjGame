@@ -1,8 +1,10 @@
 import pygame as pg
 import sys
 from pygame.locals import *
+from Player import *
 from Menu.Button import Button
-
+from Map import *
+import os
 
 class Game:
     def __init__(self, dims, fps=60):
@@ -23,6 +25,25 @@ class Game:
 
         self.start_button = Button(150, 400, 150, 50)
         self.options_button = Button(350, 400, 150, 50)
+
+    def init(self):
+        self.map = Map.get_map(self)
+
+        # Check if the sprite file exists before creating the Player
+        player_sprite_path = "ball.png"
+        if not os.path.exists(player_sprite_path):
+            print(f"Error: File '{player_sprite_path}' not found.")
+            sys.exit(1)  # Exit the program if the file is not found
+
+        self.player = Player(
+            self,
+            player_sprite_path,
+            "Assets",
+            (self.map[0][0].x, self.map[0][0].y),
+            120,
+            [0, 0],
+            "xxx"
+        )
 
     def check_events(self):
         self.glob_trigger = False
@@ -55,10 +76,10 @@ class Game:
             self.start_button.draw(self.screen)
             self.options_button.draw(self.screen)
 
-            if self.start_button.isClicked((mx, my), self.click):
+            if self.start_button.isClicked((mx, my)):
                 self.game()
 
-            if self.options_button.isClicked((mx, my), self.click):
+            if self.options_button.isClicked((mx, my)):
                 self.options()
 
             self.draw_text('Glasscord GGJ Game 2025', self.font, (255, 255, 255), self.screen, int(self.width  / 2) - 160, 20)
@@ -68,8 +89,14 @@ class Game:
             self.check_events()
             self.update()
 
+    def draw_map(self):
+        for i in range(len(self.map)):
+            for j in range(len(self.map[i])):
+                self.map[i][j].draw()
             
     def update(self):
+        self.player.update()
+        self.draw_map()
         pg.display.flip()
         self.delta_time = self.clock.tick(self.fps)
         pg.display.set_caption(f'GGJ PyGame Game')
@@ -97,6 +124,7 @@ class Game:
             self.update()
             
     def run(self):
+        self.init()
         while not self._end:
             self.check_events()
             self.main_menu()
