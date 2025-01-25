@@ -1,8 +1,24 @@
 from queue import PriorityQueue
+from Sprite.MultiAnimatedSprite import MultiAnimatedSprite
 
 
-class Enemy:
-    def __init__(self, start_position, goal, map_matrix, enemy_speed=3):
+class Enemy(MultiAnimatedSprite):
+    def __init__(
+        self,
+        game,
+        health,
+        start_position,
+        goal,
+        map_matrix,
+        path,
+        animation_time,
+        enemy_speed=3,
+        *args
+    ):
+        super().__init__(game, path, start_position, 1, 0, args)
+
+        self.game = game
+        self.health = health
         self.position = start_position
         self.goal = goal
         self.map_matrix = map_matrix
@@ -14,6 +30,13 @@ class Enemy:
 
     def heuristic(self, a, b):
         return abs(a[0] - b[0]) + abs(a[1] - b[1])
+
+    def take_damage(self, damage):
+        self.health -= damage
+
+        if self.health <= 0:
+            self.kill()
+            self.game.player.ge
 
     def astar(self):
         open_set = PriorityQueue()
@@ -63,3 +86,6 @@ class Enemy:
 
     def find_path(self):
         self.astar()
+
+    def update(self):
+        self.move()

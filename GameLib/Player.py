@@ -7,9 +7,21 @@ import sys
 
 class Player:
     def __init__(
-        self, game, init_sprite, animation_path, pos, animation_time, coords, *args
+        self,
+        game,
+        health,
+        range,
+        init_sprite,
+        animation_path,
+        pos,
+        animation_time,
+        coords,
+        money,
+        *args,
     ):
         self.game = game
+        self.health = health
+        self.range = range
 
         # Check if the sprite file exists before loading it
         if not os.path.exists(init_sprite):
@@ -32,14 +44,27 @@ class Player:
 
         self.dump_animations(animation_path, args)
 
+        self.health = health
+        self.money = money
+
     def draw(self):
         self.game.screen.blit(self.sprite, (self.x, self.y))
+
+    def get_money(self):
+        self.money += 1
+        return self.money
 
     def check_anim_time(self):
         curr_time = pg.time.get_ticks()
         if curr_time - self.animation_time > self.prev_anim_time:
             self.prev_anim_time = curr_time
             self.animation_trigger = True
+
+    def take_damage(self, damage):
+        self.health -= damage
+
+        if self.health <= 0:
+            self.kill()
 
     def get_input(self):
         keys = pg.key.get_pressed()
@@ -58,7 +83,7 @@ class Player:
                     self.game.map[self.coords[0]][self.coords[1]].y,
                 )
             )
-        elif (
+        if (
             keys[pg.K_s]
             and self.coords[1] < 10
             and (curr_time - self.prev_move_time) >= self.delta_move
@@ -71,7 +96,7 @@ class Player:
                     self.game.map[self.coords[0]][self.coords[1]].y,
                 )
             )
-        elif (
+        if (
             keys[pg.K_d]
             and self.coords[0] < 10
             and (curr_time - self.prev_move_time) >= self.delta_move
@@ -84,7 +109,7 @@ class Player:
                     self.game.map[self.coords[0]][self.coords[1]].y,
                 )
             )
-        elif (
+        if (
             keys[pg.K_a]
             and self.coords[0] > 0
             and (curr_time - self.prev_move_time) >= self.delta_move

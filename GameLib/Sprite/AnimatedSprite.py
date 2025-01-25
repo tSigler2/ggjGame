@@ -1,7 +1,9 @@
 import pygame as pg
 from collections import deque
 import os
-from Sprite import SpriteObj
+
+from Sprite.Sprite import SpriteObj
+
 
 
 class AnimatedSprite(SpriteObj):

@@ -1,9 +1,10 @@
 import pygame as pg
 import sys
 from GameLib.settings import UI
-from GameLib.level1 import Level1
+from level1 import Level1
+from GameLib.Game import Game
 from GameLib.test import Test
-from GameLib.Menu.Button import Button
+from Menu.Button import Button
 from GameLib.settings import SettingsMenu
 
 
@@ -73,7 +74,7 @@ class Menu:
                         sys.exit()
 
                     if self.start_button.isClicked((mx, my)):
-                        Level1((800, 600)).run()
+                        Game((1280, 720)).run()
 
                     if self.settings_button.isClicked((mx, my)):
                         # Open SettingsMenu

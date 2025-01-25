@@ -13,7 +13,7 @@ class SoundManager:
         self.music_list = {}
 
     def add_sound(self, sound):
-        self.sound_list[sound[:-4]] = pg.mixer.Sound(self.path + sound)
+        self.sound_list[sound[:-4]] = pg.mixer.Sound(os.path.join(self.path, sound))
 
     def load_music(self, *music):
         for mu in music:

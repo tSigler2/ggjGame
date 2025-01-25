@@ -1,7 +1,7 @@
 # File: GameLib\test.py
 import pygame as pg
 import sys
-from GameLib.enemy import Enemy
+from GameLib.Enemy import Enemy
 
 
 class Test:
@@ -37,9 +37,9 @@ class Test:
 
         # Setup Enemies
         self.enemies = [
-            Enemy((0, 0), (4, 4), self.map_matrix, enemy_speed=6),
-            Enemy((0, 0), (4, 4), self.map_matrix, enemy_speed=3),
-            Enemy((0, 0), (4, 4), self.map_matrix, enemy_speed=1),
+            Enemy(100, (0, 0), (4, 4), self.map_matrix, enemy_speed=6),
+            Enemy((100, 0, 0), (4, 4), self.map_matrix, enemy_speed=3),
+            Enemy(100, (0, 0), (4, 4), self.map_matrix, enemy_speed=1),
         ]
 
     def handle_events(self):
