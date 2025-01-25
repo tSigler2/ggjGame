@@ -74,7 +74,7 @@ class Menu:
                         sys.exit()
 
                     if self.start_button.isClicked((mx, my)):
-                        Game((800, 600)).run()
+                        Game((1280, 720)).run()
 
                     if self.settings_button.isClicked((mx, my)):
                         # Open SettingsMenu
