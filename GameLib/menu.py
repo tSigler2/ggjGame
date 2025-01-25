@@ -37,7 +37,7 @@ class Menu:
 
 
     def handle_input(self):
-         
+    
         mx, my = pg.mouse.get_pos()
 
         # handle key and mouse input
@@ -49,10 +49,13 @@ class Menu:
             sys.exit()
 
         for event in pg.event.get():  # loop through events
-            if event.type == pg.QUIT:  # quit game
+            if event.type == pg.QUIT:  # quit gamemm
                 pg.quit()
                 sys.exit()
-            
+            elif event.type == pg.KEYDOWN:
+                if event.type == pg.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        self.click = True
             # check for mouse click on the test level button if enabled
             if (
                 event.type == pg.MOUSEBUTTONDOWN and self.enable_test_level
@@ -88,28 +91,8 @@ class Menu:
         text_rect.topleft = (x,y)
         surface.blit(text_obj, text_rect)
 
-    def check_events(self):
-        #self.glob_trigger = False
-        self.click = False
-
-        for e in pg.event.get():
-            if e.type == pg.QUIT:
-                pg.quit()
-                sys.exit()
-            #elif e.type == self.glob_event:
-                #self.glob_trigger = True
-            
-            elif e.type == pg.KEYDOWN:
-                if e.type == pg.MOUSEBUTTONDOWN:
-                    if e.button == 1:
-                        self.click = True
-            elif e.type == pg.KEYDOWN:
-                if e.key == pg.K_ESCAPE:
-                    self.running = False
-
     def run(self):
         while True:
             self.handle_input()  # handle user input
             self.draw_menu()  # draw the menu
-            self.check_events()
             self.clock.tick(self.fps)  # control framerate
