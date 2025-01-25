@@ -4,7 +4,9 @@ from GameLib.Menu.Button import Button
 
 
 class Slider:
-    def __init__(self, pos: tuple, size: tuple, initial_val: float, min: int, max: int) -> None:
+    def __init__(
+        self, pos: tuple, size: tuple, initial_val: float, min: int, max: int
+    ) -> None:
         self.pos = pos
         self.size = size
         self.slider_left_pos = self.pos[0] - (size[0] // 2)
@@ -93,7 +95,9 @@ class SettingsMenu:
 
         # Load and play TownTheme.mp3 in a loop
         self.music = pg.mixer.Sound("GameLib/TownTheme.mp3")
-        self.music.set_volume(self.settings["Volume"] / 100.0)  # Set initial volume (0.0 to 1.0)
+        self.music.set_volume(
+            self.settings["Volume"] / 100.0
+        )  # Set initial volume (0.0 to 1.0)
         self.music.play(-1)  # Play the music in a loop
 
     def handle_input(self):
@@ -116,7 +120,7 @@ class SettingsMenu:
                         self.settings["Difficulty"] = self.difficulty_levels[
                             self.current_difficulty_index
                         ]
-                    
+
                     # Check if slider is clicked and update the volume
                     if self.volume_slider.container_rect.collidepoint(mx, my):
                         self.volume_slider.grabbed = True

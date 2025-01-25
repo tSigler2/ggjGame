@@ -199,9 +199,7 @@ class SettingsMenu:
             self.font,
             (255, 255, 255),
             self.screen,
-            self.volume_slider.pos[0]
-            - self.volume_slider.size[0] // 2
-            - 160,
+            self.volume_slider.pos[0] - self.volume_slider.size[0] // 2 - 160,
             self.volume_slider.pos[1] - 10,
         )
 
