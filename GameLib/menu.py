@@ -43,22 +43,7 @@ class Menu:
             if event.type == pg.QUIT:  # quit game
                 pg.quit()
                 sys.exit()
-            if event.type == pg.KEYDOWN:  # handle key presses
-                if event.key == pg.K_UP:  # move up through options
-                    self.current_option = (self.current_option - 1) % len(self.options)
-                elif event.key == pg.K_DOWN:  # move down through options
-                    self.current_option = (self.current_option + 1) % len(self.options)
-                elif event.key == pg.K_RETURN:  # handle selection
-                    if self.current_option == 0:
-                        Level1((800, 600)).run()  # start level 1
-                    elif self.current_option == 1:
-                        Level2((800, 600)).run()  # start level 2
-                    elif self.current_option == 2:
-                        Level3((800, 600)).run()  # start level 3
-                    elif self.current_option == 3:
-                        pg.quit()  # exit game
-                        sys.exit()
-
+            
             # check for mouse click on the test level button if enabled
             if (
                 event.type == pg.MOUSEBUTTONDOWN and self.enable_test_level
