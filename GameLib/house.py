@@ -19,6 +19,8 @@ class House:
         self.game = game
         self.health = health
         self.range = range
+        self.clock = pg.time.Clock()
+        self.countdown = 0
 
          # Check if the sprite file exists before loading it
         if not os.path.exists(init_sprite):
@@ -40,13 +42,22 @@ class House:
         self.prev_anim_time = self.game.clock.get_time()
         self.health = health
 
+        self.countdown = 0
+
     def draw(self):
         self.game.screen.blit(self.sprite, (self.x, self.y))
 
     def give_money(self):
         self.money_value = self.game.player.get_money()
-        print(self.money_value)
+        print("Money Value: " + str(self.money_value))
 
     def update(self):
         self.draw()
-        self.give_money()
+
+        dt = self.clock.tick()
+        self.countdown += dt
+
+        if self.countdown > 10000:
+            self.give_money()
+            self.countdown = 0 # reset it to 0 so you can count again
+        

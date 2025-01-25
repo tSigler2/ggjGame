@@ -52,6 +52,7 @@ class Player:
 
     def get_money(self):
         self.money += 1
+        return self.money
 
     def check_anim_time(self):
         curr_time = pg.time.get_ticks()
