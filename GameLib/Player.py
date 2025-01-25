@@ -7,7 +7,17 @@ import sys
 
 class Player:
     def __init__(
-        self, game, health, range, init_sprite, animation_path, pos, animation_time, coords, money, *args
+        self,
+        game,
+        health,
+        range,
+        init_sprite,
+        animation_path,
+        pos,
+        animation_time,
+        coords,
+        money,
+        *args,
     ):
         self.game = game
         self.health = health
@@ -45,7 +55,7 @@ class Player:
         if curr_time - self.animation_time > self.prev_anim_time:
             self.prev_anim_time = curr_time
             self.animation_trigger = True
-    
+
     def take_damage(self, damage):
         self.health -= damage
 

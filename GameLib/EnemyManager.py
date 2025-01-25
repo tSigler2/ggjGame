@@ -30,3 +30,7 @@ class EnemyManager:
                 self.enemy_list.append(Enemy((init_spot), 0), self.game.map))
             elif not self.game.map[init_spot][10].occupied:
                 self.enemy_list.append(Enemy((init_spot), 10), self.game.map))
+
+    def updateEnemyies(self):
+        for enemy in self.enemyList:
+            enemy.
