@@ -15,7 +15,6 @@ class Menu:
         pg.display.set_caption("Main Menu")  # set window title
         self.clock = pg.time.Clock()  # set clock to control framerate
         self.fps = 60  # target frames per second
-        self.click = False #Checks to see if a click was performed
 
         # Menu options
         self.font = pg.font.SysFont("Consolas", 25)
@@ -37,25 +36,21 @@ class Menu:
 
 
     def handle_input(self):
-    
         mx, my = pg.mouse.get_pos()
 
-        # handle key and mouse input
-        if self.start_button.isClicked((mx, my), self.click):
-            Level1.run()
-        
-        if self.quit_button.isClicked((mx, my), self.click):
-            pg.quit()
-            sys.exit()
-
         for event in pg.event.get():  # loop through events
-            if event.type == pg.QUIT:  # quit gamemm
+            if event.type == pg.QUIT:  # quit gamem
                 pg.quit()
                 sys.exit()
-            elif event.type == pg.KEYDOWN:
-                if event.type == pg.MOUSEBUTTONDOWN:
-                    if event.button == 1:
-                        self.click = True
+
+            elif event.type == pg.MOUSEBUTTONDOWN:
+                if event.button == 1 and self.quit_button.isClicked((mx, my)):
+                    pg.quit()
+                    sys.exit()
+
+                if event.button == 1 and self.start_button.isClicked((mx, my)):
+                    Level1((800, 600)).run()
+
             # check for mouse click on the test level button if enabled
             if (
                 event.type == pg.MOUSEBUTTONDOWN and self.enable_test_level
@@ -65,6 +60,10 @@ class Menu:
                     mouse_pos
                 ):  # check if click is inside button
                     self.test_level()  # run test level function
+
+        # handle key and mouse input
+        #if self.start_button.isClicked((mx, my)):
+            #Level1.run()
 
     def test_level(self):
         # test level logic (stub for now)

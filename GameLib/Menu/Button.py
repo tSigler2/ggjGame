@@ -15,5 +15,5 @@ class Button(SpriteObj):
        
         pg.draw.rect(surface, self.color, self.rect)
 
-    def isClicked(self, mouse_pos, click):
-        return self.rect.collidepoint(mouse_pos) and click
+    def isClicked(self, mouse_pos):
+        return self.rect.collidepoint(mouse_pos)
