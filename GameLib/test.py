@@ -1,99 +1,79 @@
-# File: GameLib\test.py
 import pygame as pg
 import sys
 from GameLib.enemy import Enemy
 
+# Setup Pygame
+pg.init()
 
-class Test:
-    def __init__(self, dims=(600, 600), grid_size=11):
-        pg.init()
-        self.width, self.height = dims
-        self.cell_size = self.width // grid_size
-        self.grid_size = grid_size
-        self.screen = pg.display.set_mode(dims)
-        pg.display.set_caption("Pathfinding Test")
-        self.clock = pg.time.Clock()
+# Display
+WIDTH, HEIGHT = 800, 600
+screen = pg.display.set_mode((WIDTH, HEIGHT))
+pg.display.set_caption("Enemy Pathfinding Test")
 
-        self.maze = [
-            [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-            [" ", " ", "#", "#", "#", " ", "#", "#", "#", " ", " "],
-            [" ", " ", " ", " ", "#", " ", " ", " ", " ", " ", " "],
-            [" ", "#", "#", " ", "#", " ", "#", "#", "#", "#", " "],
-            [" ", " ", " ", " ", "#", " ", " ", " ", " ", " ", " "],
-            [" ", " ", " ", " ", "#", " ", " ", " ", "#", "#", " "],
-            [" ", "#", " ", "#", "#", " ", " ", " ", " ", " ", " "],
-            [" ", " ", " ", " ", " ", " ", "#", "#", "#", " ", " "],
-            [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-            [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-            [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-        ]
+# Map Configuration
+tile_size = 40
+map_matrix = [
+    ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"],
+    ["0", "M", "M", "M", "M", "M", "M", "M", "M", "M", "0"],
+    ["0", "M", "0", "0", "0", "0", "0", "0", "0", "M", "0"],
+    ["0", "M", "0", "H", "H", "H", "M", "M", "0", "M", "0"],
+    ["0", "M", "0", "H", "H", "H", "M", "0", "0", "M", "0"],
+    ["0", "M", "0", "H", "H", "H", "M", "0", "M", "M", "0"],
+    ["0", "M", "0", "0", "0", "0", "M", "0", "0", "M", "0"],
+    ["0", "M", "M", "M", "0", "0", "M", "M", "0", "M", "0"],
+    ["0", "0", "0", "M", "M", "M", "M", "0", "0", "0", "0"],
+    ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"],
+    ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"],
+]
 
-        # make the maze to a grid of 0 (empty) and 1 (obstacle)
-        self.grid = self.convert_maze_to_grid()
+colors = {
+    "0": (194, 178, 128),  # Sand (light beige)
+    "H": (139, 69, 19),  # House (brown))
+    "M": (255, 0, 255),  # Coral (magenta)
+}
 
-        # put the house in the center of the maze
-        self.house = (grid_size // 2, grid_size // 2)
+# Setup Enemy
+start_position = (0, 0)
+goal = (4, 4)
+enemy = Enemy(start_position, goal, map_matrix)
 
-        # spawn the enemy at the top-left corner
-        self.enemy = Enemy(0, 0, self.cell_size)
-        self.enemy.path = self.enemy.pathfinding(self.grid, (0, 0), self.house)
+# Game Loop
+clock = pg.time.Clock()
+running = True
+while running:
+    screen.fill((0, 0, 0))  # Clear screen
 
-    def convert_maze_to_grid(self):
-        # Convert the maze into a grid of 0's and 1's
-        grid = []
-        for row in self.maze:
-            grid_row = []
-            for cell in row:
-                if cell == "#":  # Obstacle
-                    grid_row.append(1)
-                else:  # Empty space or house
-                    grid_row.append(0)
-            grid.append(grid_row)
-        return grid
+    # Draw Map
+    for row_idx, row in enumerate(map_matrix):
+        for col_idx, tile in enumerate(row):
+            x, y = col_idx * tile_size, row_idx * tile_size
+            pg.draw.rect(
+                screen,
+                colors[tile],
+                (x, y, tile_size, tile_size),
+            )
 
-    def draw_grid(self):
-        # Draw the grid with obstacles, empty spaces, and the house
-        for row in range(self.grid_size):
-            for col in range(self.grid_size):
-                color = (255, 255, 255)  # Default empty space (white)
-                if self.grid[row][col] == 1:
-                    color = (50, 50, 50)  # Obstacle (dark gray)
-                elif (row, col) == self.house:
-                    color = (0, 255, 0)  # House (green)
-                pg.draw.rect(
-                    self.screen,
-                    color,
-                    (
-                        col * self.cell_size,
-                        row * self.cell_size,
-                        self.cell_size,
-                        self.cell_size,
-                    ),
-                )
+    # Move Enemy
+    enemy.move()
+    enemy_position = enemy.get_position()
+    ex, ey = enemy_position
+    pg.draw.circle(
+        screen,
+        (255, 255, 255),  # White for enemy
+        (ex * tile_size + tile_size // 2, ey * tile_size + tile_size // 2),
+        tile_size // 4,
+    )
 
-    def update(self):
-        if self.enemy.path:
-            next_pos = self.enemy.path.pop(0)
-            self.enemy.x, self.enemy.y = next_pos
+    # Event Handling
+    for event in pg.event.get():
+        if event.type == pg.QUIT:
+            running = False
 
-    def draw(self):
-        self.screen.fill((0, 0, 0))  # background color
-        self.draw_grid()
-        self.enemy.draw(self.screen)
-        pg.display.flip()
+    # Update Display
+    pg.display.flip()
 
-    def run(self):
-        while True:
-            for event in pg.event.get():
-                if event.type == pg.QUIT:
-                    pg.quit()
-                    sys.exit()
+    # Frame rate
+    clock.tick(10)
 
-            self.update()
-            self.draw()
-            self.clock.tick(5)  # slow down
-
-
-if __name__ == "__main__":
-    game = Test()
-    game.run()
+pg.quit()
+sys.exit()

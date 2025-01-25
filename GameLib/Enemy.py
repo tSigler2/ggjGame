@@ -1,70 +1,66 @@
-# File: GameLib\enemy.py
-import pygame as pg
-from heapq import heappush, heappop
+import random
+from queue import PriorityQueue
 
 
 class Enemy:
-    def __init__(self, x, y, size, color=(255, 0, 0)):
-        self.x = x
-        self.y = y
-        self.size = size
-        self.color = color
+    def __init__(self, start_position, goal, map_matrix, enemy_speed=3):
+        self.position = start_position
+        self.goal = goal
+        self.map_matrix = map_matrix
+        self.enemy_speed = enemy_speed
         self.path = []
+        self.index = 0
+        self.move_counter = 0
+        self.find_path()
 
-    def draw(self, screen):
-        pg.draw.rect(
-            screen,
-            self.color,
-            (self.x * self.size, self.y * self.size, self.size, self.size),
-        )
+    def heuristic(self, a, b):
+        return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
-    """
-        This is A* pathfinding algorithm.
-        - grid: 2D list representing the maze
-        - start: (row, col) tuple of the start position
-        - end: (row, col) tuple of the target position
-        - return: List of (row, col) tuples representing the path
-    """
-
-    def pathfinding(self, grid, start, end):
-        def heuristic(a, b):
-            # Manhattan distance
-            return abs(a[0] - b[0]) + abs(a[1] - b[1])
-
-        open_set = []
-        heappush(open_set, (0, start))
+    def astar(self):
+        open_set = PriorityQueue()
+        open_set.put((0, self.position))
         came_from = {}
-        g_score = {start: 0}
-        f_score = {start: heuristic(start, end)}
+        g_score = {self.position: 0}
+        f_score = {self.position: self.heuristic(self.position, self.goal)}
 
-        while open_set:
-            _, current = heappop(open_set)
+        while not open_set.empty():
+            _, current = open_set.get()
 
-            if current == end:
-                # Reconstruct the path
+            if current == self.goal:
                 path = []
                 while current in came_from:
                     path.append(current)
                     current = came_from[current]
-                return path[::-1]  # Return the reversed path
+                path.reverse()
+                self.path = path
+                return
 
-            # Check neighbors (up, down, left, right)
             for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
                 neighbor = (current[0] + dx, current[1] + dy)
-
-                # Make sure the neighbor is within bounds and not an obstacle
                 if (
-                    0 <= neighbor[0] < len(grid)
-                    and 0 <= neighbor[1] < len(grid[0])
-                    and grid[neighbor[0]][neighbor[1]]
-                    == 0  # Check for empty space (not obstacle)
+                    0 <= neighbor[1] < len(self.map_matrix)
+                    and 0 <= neighbor[0] < len(self.map_matrix[0])
+                    and self.map_matrix[neighbor[1]][neighbor[0]] != "M"
                 ):
                     tentative_g_score = g_score[current] + 1
-
                     if neighbor not in g_score or tentative_g_score < g_score[neighbor]:
                         came_from[neighbor] = current
                         g_score[neighbor] = tentative_g_score
-                        f_score[neighbor] = tentative_g_score + heuristic(neighbor, end)
-                        heappush(open_set, (f_score[neighbor], neighbor))
+                        f_score[neighbor] = tentative_g_score + self.heuristic(
+                            neighbor, self.goal
+                        )
+                        open_set.put((f_score[neighbor], neighbor))
 
-        return []  # No path found, return empty list
+    def move(self):
+        self.move_counter += 1
+        if self.move_counter >= self.enemy_speed:
+            self.move_counter = 0
+            if self.index < len(self.path) - 1:
+                self.index += 1
+                self.position = self.path[self.index]
+
+    def get_position(self):
+        return self.position
+
+    def find_path(self):
+        self.astar()
