@@ -2,7 +2,8 @@ from queue import PriorityQueue
 
 
 class Enemy:
-    def __init__(self, start_position, goal, map_matrix, enemy_speed=3):
+    def __init__(self, health, start_position, goal, map_matrix, enemy_speed=3):
+        self.health = health
         self.position = start_position
         self.goal = goal
         self.map_matrix = map_matrix
@@ -14,6 +15,12 @@ class Enemy:
 
     def heuristic(self, a, b):
         return abs(a[0] - b[0]) + abs(a[1] - b[1])
+    
+    def take_damage(self, damage):
+        self.health -= damage
+
+        if self.health <= 0:
+            self.kill()
 
     def astar(self):
         open_set = PriorityQueue()

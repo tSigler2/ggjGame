@@ -40,6 +40,12 @@ class Player:
         if curr_time - self.animation_time > self.prev_anim_time:
             self.prev_anim_time = curr_time
             self.animation_trigger = True
+    
+    def take_damage(self, damage):
+        self.health -= damage
+
+        if self.health <= 0:
+            self.kill()
 
     def get_input(self):
         keys = pg.key.get_pressed()
