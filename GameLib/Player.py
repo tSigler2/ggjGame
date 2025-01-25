@@ -50,6 +50,9 @@ class Player:
     def draw(self):
         self.game.screen.blit(self.sprite, (self.x, self.y))
 
+    def get_money(self):
+        self.money += 1
+
     def check_anim_time(self):
         curr_time = pg.time.get_ticks()
         if curr_time - self.animation_time > self.prev_anim_time:

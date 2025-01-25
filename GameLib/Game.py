@@ -2,6 +2,7 @@ import pygame as pg
 import sys
 from pygame.locals import *
 from Player import *
+from house import *
 from Menu.Button import Button
 from Map import *
 import os
@@ -38,7 +39,7 @@ class Game:
 
         self.player = Player(
             self,
-            100,
+            5,
             3,
             player_sprite_path,
             "Assets",
@@ -48,6 +49,38 @@ class Game:
             0,
             0,
             "xxx",
+        )
+
+        house_sprite_path = "house.png"
+        if not os.path.exists(house_sprite_path):
+            print(f"Error: File '{house_sprite_path}' not found.")
+            sys.exit(1)  # Exit the program if the file is not found
+
+        self.house = House(
+            self,
+            5,
+            house_sprite_path,
+            "Assets",
+            (self.map[1][1].x, self.map[1][1].y),
+            120,
+            [5, 5],
+            "xxx"
+        )
+
+        house_sprite_path = "house.png"
+        if not os.path.exists(house_sprite_path):
+            print(f"Error: File '{house_sprite_path}' not found.")
+            sys.exit(1)  # Exit the program if the file is not found
+
+        self.house = House(
+            self,
+            5,
+            house_sprite_path,
+            "Assets",
+            (self.map[1][1].x, self.map[1][1].y),
+            120,
+            [5, 5],
+            "xxx"
         )
 
     def check_events(self):
@@ -79,6 +112,7 @@ class Game:
             self.screen.fill((0, 0, 0))
             self.draw_map()
             self.player.update()
+            self.house.update()
             self.check_events()
             self.update()
 

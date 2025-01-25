@@ -17,6 +17,7 @@ class Enemy(MultiAnimatedSprite):
     ):
         super().__init__(game, path, start_position, 1, 0, args)
 
+        self.game = game
         self.health = health
         self.position = start_position
         self.goal = goal
@@ -35,6 +36,7 @@ class Enemy(MultiAnimatedSprite):
 
         if self.health <= 0:
             self.kill()
+            self.game.player.ge
 
     def astar(self):
         open_set = PriorityQueue()
