@@ -1,112 +1,145 @@
 import pygame as pg
 import sys
+from GameLib.settings import UI
 from GameLib.level1 import Level1
-from GameLib.level2 import Level2
-from GameLib.level3 import Level3
+from GameLib.test import Test
+from GameLib.Menu.Button import Button
+from GameLib.settings import SettingsMenu
 
 
 class Menu:
-    def __init__(
-        self, dims, enable_test_level=True
-    ):  # init menu with given dimensions and optional test level
-        pg.init()  # initialize pygame
+    def __init__(self, dims, enable_test_level=True):
+        pg.init()
         self.width, self.height = dims
-        self.screen = pg.display.set_mode(dims)  # set window size
-        pg.display.set_caption("Main Menu")  # set window title
-        self.clock = pg.time.Clock()  # set clock to control framerate
-        self.fps = 60  # target frames per second
+        self.screen = pg.display.set_mode(dims)
+        pg.display.set_caption("Main Menu")
+        self.clock = pg.time.Clock()
+        self.fps = 60
+        UI.init(self)
+        self.font = pg.font.Font(None, 36)  # Default font with size 36
 
-        # Menu options
-        self.font = pg.font.Font(None, 50)  # default font for menu options
-        self.options = ["Level 1", "Level 2", "Level 3", "Exit"]  # menu items
-        self.current_option = 0  # current selected option index
+        # Button dimensions and spacing
+        self.button_width = 200
+        self.button_height = 50
+        self.button_spacing = 30  # Spacing between buttons
 
-        # Test level button (controlled by enable_test_level)
-        self.test_button_text = "Test Level"
-        self.test_button_font = pg.font.Font(None, 40)  # font for test button text
-        self.test_button_width = 150  # button width
-        self.test_button_height = 50  # button height
-        self.enable_test_level = (
-            enable_test_level  # flag to enable or disable the test level button
+        # Calculate button positions dynamically
+        total_height = (
+            self.button_height * 3 + self.button_spacing * 2
+        )  # Three buttons, two gaps
+        start_y = (self.height - total_height) // 2
+
+        self.start_button = Button(
+            (self.width - self.button_width) // 2,
+            start_y,
+            self.button_width,
+            self.button_height,
+        )
+        self.settings_button = Button(
+            (self.width - self.button_width) // 2,
+            start_y + self.button_height + self.button_spacing,
+            self.button_width,
+            self.button_height,
+        )
+        self.quit_button = Button(
+            (self.width - self.button_width) // 2,
+            start_y + (self.button_height + self.button_spacing) * 2,
+            self.button_width,
+            self.button_height,
         )
 
-    def handle_input(self):
-        # handle key and mouse input
-        keys = pg.key.get_pressed()  # get all pressed keys
+        # Test button (optional)
+        self.enable_test_level = enable_test_level
+        if self.enable_test_level:
+            self.test_button = Button(
+                (self.width - self.button_width) // 2,
+                start_y - self.button_height - self.button_spacing,
+                self.button_width,
+                self.button_height,
+            )
 
-        for event in pg.event.get():  # loop through events
-            if event.type == pg.QUIT:  # quit game
+    def handle_input(self):
+        mx, my = pg.mouse.get_pos()
+
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
                 pg.quit()
                 sys.exit()
-            if event.type == pg.KEYDOWN:  # handle key presses
-                if event.key == pg.K_UP:  # move up through options
-                    self.current_option = (self.current_option - 1) % len(self.options)
-                elif event.key == pg.K_DOWN:  # move down through options
-                    self.current_option = (self.current_option + 1) % len(self.options)
-                elif event.key == pg.K_RETURN:  # handle selection
-                    if self.current_option == 0:
-                        Level1((800, 600)).run()  # start level 1
-                    elif self.current_option == 1:
-                        Level2((800, 600)).run()  # start level 2
-                    elif self.current_option == 2:
-                        Level3((800, 600)).run()  # start level 3
-                    elif self.current_option == 3:
-                        pg.quit()  # exit game
+
+            elif event.type == pg.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    if self.quit_button.isClicked((mx, my)):
+                        pg.quit()
                         sys.exit()
 
-            # check for mouse click on the test level button if enabled
-            if (
-                event.type == pg.MOUSEBUTTONDOWN and self.enable_test_level
-            ):  # only check if enabled
-                mouse_pos = pg.mouse.get_pos()  # get mouse position
-                if self.test_button_rect.collidepoint(
-                    mouse_pos
-                ):  # check if click is inside button
-                    self.test_level()  # run test level function
+                    if self.start_button.isClicked((mx, my)):
+                        Level1((800, 600)).run()
 
-    def test_level(self):
-        # test level logic (stub for now)
-        print("Testing Level")
+                    if self.settings_button.isClicked((mx, my)):
+                        # Open SettingsMenu
+                        settings_menu = SettingsMenu((800, 600))
+                        settings_menu.run()
+
+                    if self.enable_test_level and self.test_button.isClicked((mx, my)):
+                        Test((800, 600)).run()
 
     def draw_menu(self):
-        self.screen.fill((0, 0, 0))  # set background color to black
+        self.screen.fill((0, 0, 0))
 
-        # draw menu options
-        for i, option in enumerate(self.options):
-            color = (
-                (255, 255, 0) if i == self.current_option else (255, 255, 255)
-            )  # highlight current option
-            text = self.font.render(option, True, color)  # render text
-            text_rect = text.get_rect(
-                center=(self.width // 2, 200 + i * 100)
-            )  # position text
-            self.screen.blit(text, text_rect)  # draw text to screen
+        # Draw title
+        title_text = "Bubble Blast Deluxe Unlimited Edition ft. Glasscord Team"
+        self.draw_centered_text(
+            title_text, self.font, (255, 255, 255), self.width // 2, 50
+        )
 
-        # draw the "Test Level" button if enabled
+        # Draw buttons
+        self.start_button.draw(self.screen)
+        self.settings_button.draw(self.screen)
+        self.quit_button.draw(self.screen)
         if self.enable_test_level:
-            self.test_button_rect = pg.Rect(
-                self.width - self.test_button_width - 20,
-                self.height - self.test_button_height - 20,
-                self.test_button_width,
-                self.test_button_height,
-            )  # set button rectangle
-            pg.draw.rect(
-                self.screen, (255, 255, 0), self.test_button_rect
-            )  # draw button background
-            test_button_text = self.test_button_font.render(
-                self.test_button_text, True, (0, 0, 0)
-            )  # render button text
-            test_button_text_rect = test_button_text.get_rect(
-                center=self.test_button_rect.center
-            )  # position button text
-            self.screen.blit(
-                test_button_text, test_button_text_rect
-            )  # draw button text
+            self.test_button.draw(self.screen)
 
-        pg.display.flip()  # update the screen
+        # Draw button text
+        self.draw_centered_text(
+            "Start Game",
+            self.font,
+            (255, 255, 255),
+            self.width // 2,
+            self.start_button.rect.y + 10,
+        )
+        self.draw_centered_text(
+            "Settings",
+            self.font,
+            (255, 255, 255),
+            self.width // 2,
+            self.settings_button.rect.y + 10,
+        )
+        self.draw_centered_text(
+            "Quit",
+            self.font,
+            (255, 255, 255),
+            self.width // 2,
+            self.quit_button.rect.y + 10,
+        )
+
+        if self.enable_test_level:
+            self.draw_centered_text(
+                "Test",
+                self.font,
+                (255, 255, 255),
+                self.width // 2,
+                self.test_button.rect.y + 10,
+            )
+
+        pg.display.flip()
+
+    def draw_centered_text(self, text, font, color, center_x, center_y):
+        text_obj = font.render(text, 1, color)
+        text_rect = text_obj.get_rect(center=(center_x, center_y))
+        self.screen.blit(text_obj, text_rect)
 
     def run(self):
         while True:
-            self.handle_input()  # handle user input
-            self.draw_menu()  # draw the menu
-            self.clock.tick(self.fps)  # control framerate
+            self.handle_input()
+            self.draw_menu()
+            self.clock.tick(self.fps)
