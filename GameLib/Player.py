@@ -7,7 +7,7 @@ import sys
 
 class Player:
     def __init__(
-        self, game, init_sprite, animation_path, pos, animation_time, coords, *args
+        self, game, init_sprite, animation_path, pos, animation_time, coords, health, money, *args
     ):
         self.game = game
 
@@ -31,6 +31,9 @@ class Player:
         self.anim_paths = {}
 
         self.dump_animations(animation_path, args)
+
+        self.health = health
+        self.money = money
 
     def draw(self):
         self.game.screen.blit(self.sprite, (self.x, self.y))
