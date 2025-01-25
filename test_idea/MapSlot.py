@@ -1,5 +1,6 @@
 import pygame as pg
 
+
 class Space:
     def __init__(self, game, file, coords, dims):
         self.game = game

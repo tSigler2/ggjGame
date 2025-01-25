@@ -1,8 +1,10 @@
+# File: test_idea\Game.py
 # run this code via: `python -m test_idea.Game`
 import pygame as pg
 from test_idea.Map import *
 from test_idea.Player import Player
 import sys
+import os
 
 
 class Game:
@@ -20,9 +22,16 @@ class Game:
 
     def init(self):
         self.map = Map.get_map(self)
+
+        # Check if the sprite file exists before creating the Player
+        player_sprite_path = "GameLib/ball.png"
+        if not os.path.exists(player_sprite_path):
+            print(f"Error: File '{player_sprite_path}' not found.")
+            sys.exit(1)  # Exit the program if the file is not found
+
         self.player = Player(
             self,
-            "../GameLib/ball.png",
+            player_sprite_path,
             "Assets",
             (self.map[0][0].x, self.map[0][0].y),
             120,
