@@ -29,7 +29,6 @@ class Game:
         self.options_button = Button(350, 400, 150, 50)
         self.frame_count = 0
 
-
     def init(self):
         self.map = Map.get_map(self)
 
@@ -66,7 +65,7 @@ class Game:
             (self.map[5][5].x, self.map[5][5].y),
             120,
             [5, 5],
-            "xxx"
+            "xxx",
         )
 
         self.sound_manager = SoundManager("GameLib/Assets/sounds")
@@ -92,7 +91,7 @@ class Game:
         self.frame_count += 1
         pg.display.flip()
         self.delta_time = self.clock.tick(self.fps)
-        pg.display.set_caption(f"GGJ PyGame Game")
+        pg.display.set_caption(f"SquirrelyPop")
 
     def game(self):
 
@@ -105,7 +104,6 @@ class Game:
             self.house.update()
             self.check_events()
             self.update()
-
 
     def options(self):
 

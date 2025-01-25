@@ -50,8 +50,8 @@ class Player:
     def draw(self):
         self.game.screen.blit(self.sprite, (self.x, self.y))
 
-    def get_money(self):
-        self.money += 1
+    def get_money(self, val):
+        self.money += val
         return self.money
 
     def check_anim_time(self):

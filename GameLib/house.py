@@ -48,7 +48,7 @@ class House:
         self.game.screen.blit(self.sprite, (self.x, self.y))
 
     def give_money(self):
-        self.money_value = self.game.player.get_money()
+        self.money_value = self.game.player.get_money(1)
         print("Money Value: " + str(self.money_value))
 
     def update(self):
@@ -60,4 +60,7 @@ class House:
         if self.countdown > 10000:
             self.give_money()
             self.countdown = 0 # reset it to 0 so you can count again
+
+        if self.health == 0:
+            self.game._end = True
         
