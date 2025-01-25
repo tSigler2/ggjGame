@@ -1,15 +1,7 @@
 import pygame as pg
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 
 # from AnimatedSprite import AnimatedSprit
-from GameLib.Sprite.AnimatedSprite import AnimatedSprite
-=======
 from Sprite.AnimatedSprite import AnimatedSprite
->>>>>>> Stashed changes
-=======
-from Sprite.AnimatedSprite import AnimatedSprite
->>>>>>> Stashed changes
 from collections import deque
 import os
 
@@ -30,13 +22,7 @@ class MultiAnimatedSprite(AnimatedSprite):
         if animation_set in self.animation_paths:
             self.images = self.animation_paths[animation_set]
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
+
     def dump_animations(animation_list):
         print(animation_list)  # replace this with actual logic
-=======
-    
->>>>>>> Stashed changes
-=======
-    
->>>>>>> Stashed changes
+
