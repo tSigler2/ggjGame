@@ -20,4 +20,6 @@ class MultiAnimatedSprite(AnimatedSprite):
         if animation_set in self.animation_paths:
             self.images = self.animation_paths[animation_set]
 
-    def dump_animations
+
+    def dump_animations(animation_list):
+        print(animation_list)  # replace this with actual logic
