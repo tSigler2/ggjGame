@@ -67,6 +67,22 @@ class Game:
             "xxx"
         )
 
+        house_sprite_path = "house.png"
+        if not os.path.exists(house_sprite_path):
+            print(f"Error: File '{house_sprite_path}' not found.")
+            sys.exit(1)  # Exit the program if the file is not found
+
+        self.house = House(
+            self,
+            5,
+            house_sprite_path,
+            "Assets",
+            (self.map[1][1].x, self.map[1][1].y),
+            120,
+            [5, 5],
+            "xxx"
+        )
+
     def check_events(self):
         self.glob_trigger = False
         self.click = False

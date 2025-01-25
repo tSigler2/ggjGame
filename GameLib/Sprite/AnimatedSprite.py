@@ -2,9 +2,13 @@ import pygame as pg
 from collections import deque
 import os
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
 # from Sprite import SpriteObj
 from GameLib.Sprite.Sprite import SpriteObj
+=======
+from Sprite.Sprite import SpriteObj
+>>>>>>> Stashed changes
 =======
 from Sprite.Sprite import SpriteObj
 >>>>>>> Stashed changes
