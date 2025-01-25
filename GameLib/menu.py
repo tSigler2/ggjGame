@@ -15,6 +15,7 @@ class Menu:
         pg.display.set_caption("Main Menu")  # set window title
         self.clock = pg.time.Clock()  # set clock to control framerate
         self.fps = 60  # target frames per second
+        self.click = False #Checks to see if a click was performed
 
         # Menu options
         self.font = pg.font.SysFont("Consolas", 25)
@@ -42,7 +43,8 @@ class Menu:
 
         # handle key and mouse input
         if self.start_button.isClicked((mx, my), self.click):
-            Level1.run()
+            self.click = True
+            self.Level1.run()
 
         for event in pg.event.get():  # loop through events
             if event.type == pg.QUIT:  # quit game
