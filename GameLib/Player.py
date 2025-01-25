@@ -7,9 +7,11 @@ import sys
 
 class Player:
     def __init__(
-        self, game, init_sprite, animation_path, pos, animation_time, coords, health, money, *args
+        self, game, health, range, init_sprite, animation_path, pos, animation_time, coords, money, *args
     ):
         self.game = game
+        self.health = health
+        self.range = range
 
         # Check if the sprite file exists before loading it
         if not os.path.exists(init_sprite):

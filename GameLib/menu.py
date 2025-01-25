@@ -1,9 +1,9 @@
 import pygame as pg
 import sys
-from settings import UI
+from GameLib.settings import UI
 from level1 import Level1
 from Game import Game
-from BeameLib.test import Test
+from GameLib.test import Test
 from GameLib.Menu.Button import Button
 from GameLib.settings import SettingsMenu
 

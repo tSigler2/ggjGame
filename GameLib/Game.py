@@ -36,6 +36,8 @@ class Game:
 
         self.player = Player(
             self,
+            100,
+            3,
             player_sprite_path,
             "Assets",
             (self.map[0][0].x, self.map[0][0].y),
