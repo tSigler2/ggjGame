@@ -17,7 +17,7 @@ class Menu:
         self.fps = 60  # target frames per second
 
         # Menu options
-        self.font = pg.font.Font(None, 50)  # default font for menu options
+        self.font = pg.font.SysFont("Consolas", 25)
         self.options = ["Level 1", "Level 2", "Level 3", "Exit"]  # menu items
         self.current_option = 0  # current selected option index
 
@@ -32,6 +32,7 @@ class Menu:
 
         self.start_button = Button(150, 400, 150, 50)
         self.options_button = Button(350, 400, 150, 50)
+        self.quit_button = Button(550, 400, 150, 50)
 
 
     def handle_input(self):
@@ -77,10 +78,13 @@ class Menu:
 
         self.start_button.draw(self.screen)
         self.options_button.draw(self.screen)
+        self.quit_button.draw(self.screen)
+
 
         self.draw_text('Glasscord GGJ Game 2025', self.font, (255, 255, 255), self.screen, int(self.width  / 2) - 160, 20)
         self.draw_text('Start Game', self.font, (255, 255, 255), self.screen, 155, 415)
         self.draw_text('Options', self.font, (255, 255, 255), self.screen, 375, 415)
+        self.draw_text('Quit', self.font, (255, 255, 255), self.screen, 595, 415)
 
         pg.display.flip()  # update the screen
 
