@@ -6,6 +6,7 @@ from Menu.Button import Button
 from Map import *
 import os
 
+
 class Game:
     def __init__(self, dims, fps=60):
         pg.init()
@@ -46,7 +47,7 @@ class Game:
             [0, 0],
             0,
             0,
-            "xxx"
+            "xxx",
         )
 
     def check_events(self):
@@ -58,45 +59,52 @@ class Game:
                 sys.exit()
             elif e.type == self.glob_event:
                 self.glob_trigger = True
-           
+
     def draw_map(self):
         for i in range(len(self.map)):
             for j in range(len(self.map[i])):
                 self.map[i][j].draw()
-            
+
     def update(self):
         self.frame_count += 1
         pg.display.flip()
         self.delta_time = self.clock.tick(self.fps)
-        pg.display.set_caption(f'GGJ PyGame Game')
-    
+        pg.display.set_caption(f"GGJ PyGame Game")
+
     def game(self):
-        
+
         self.running = True
 
         while self.running:
-            self.screen.fill((0,0,0))
+            self.screen.fill((0, 0, 0))
             self.draw_map()
             self.player.update()
             self.check_events()
             self.update()
 
     def options(self):
-        
+
         self.running = True
 
         while self.running:
-            self.screen.fill((0,0,0))
-            self.draw_text('Press ESC for Main Menu', self.font, (255, 255, 255), self.screen, int(self.width  / 2) - 160, 20)
+            self.screen.fill((0, 0, 0))
+            self.draw_text(
+                "Press ESC for Main Menu",
+                self.font,
+                (255, 255, 255),
+                self.screen,
+                int(self.width / 2) - 160,
+                20,
+            )
 
             self.check_events()
             self.update()
-            
+
     def run(self):
         self.init()
         self.game()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     game = Game((1280, 720))
     game.run()
-
