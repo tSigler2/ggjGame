@@ -1,4 +1,5 @@
 import pygame as pg
+from GameLib.Enemy import Enemy
 import sys
 
 class Test:
@@ -10,9 +11,12 @@ class Test:
         pg.display.set_caption("Test")
         self.clock = pg.time.Clock()
 
+        self.enemy = Enemy(350, 200, 150, 50)
+    
 
     def update(self):
         self.screen.fill((0, 0, 0))  # this sets the background color (black is 0, 0, 0)
+        self.enemy.draw(self.screen)
 
 
         pg.display.flip()  # this refreshes the display
