@@ -53,13 +53,13 @@ class Player:
             self.move((self.game.map[self.coords[0]][self.coords[1]].x, self.game.map[self.coords[0]][self.coords[1]].y))
 
     def move(self, val):
-            self.x, self.y = val
+        self.x, self.y = val
 
     def dump_animations(self, path, *args):
         for k in args[0]:
             self.anim_paths[k] = deque()
             for img in sorted(os.listdir(path+"/"+k)):
-                self.anim_path.append(pg.image.load(path+"/"+k+"/"+img))
+                self.anim_paths[k].append(pg.image.load(path + "/" + k + "/" + img))
 
     def update(self):
         self.get_input()
