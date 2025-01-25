@@ -78,7 +78,17 @@ class Menu:
         self.start_button.draw(self.screen)
         self.options_button.draw(self.screen)
 
+        self.draw_text('Glasscord GGJ Game 2025', self.font, (255, 255, 255), self.screen, int(self.width  / 2) - 160, 20)
+        self.draw_text('Start Game', self.font, (255, 255, 255), self.screen, 155, 415)
+        self.draw_text('Options', self.font, (255, 255, 255), self.screen, 375, 415)
+
         pg.display.flip()  # update the screen
+
+    def draw_text(self, text, font, color, surface, x, y):
+        text_obj = font.render(text, 1, color)
+        text_rect = text_obj.get_rect()
+        text_rect.topleft = (x,y)
+        surface.blit(text_obj, text_rect)
 
     def run(self):
         while True:
