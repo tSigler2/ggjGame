@@ -1,5 +1,6 @@
 import pygame as pg
-from AnimatedSprite import AnimatedSprite
+# from AnimatedSprite import AnimatedSprit
+from GameLib.Sprite.AnimatedSprite import AnimatedSprite
 from collections import deque
 import os
 
