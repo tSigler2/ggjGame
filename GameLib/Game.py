@@ -24,6 +24,7 @@ class Game:
 
         self.start_button = Button(150, 400, 150, 50)
         self.options_button = Button(350, 400, 150, 50)
+        self.frame_count = 0
 
     def init(self):
         self.map = Map.get_map(self)
@@ -62,6 +63,7 @@ class Game:
                 self.map[i][j].draw()
             
     def update(self):
+        self.frame_count += 1
         pg.display.flip()
         self.delta_time = self.clock.tick(self.fps)
         pg.display.set_caption(f'GGJ PyGame Game')
