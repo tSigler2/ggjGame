@@ -41,6 +41,8 @@ class Game:
             (self.map[0][0].x, self.map[0][0].y),
             120,
             [0, 0],
+            0,
+            0,
             "xxx"
         )
 

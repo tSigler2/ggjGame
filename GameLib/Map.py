@@ -1,5 +1,4 @@
 import pygame as pg
-from Game import Game
 from MapSlot import Space
 
 

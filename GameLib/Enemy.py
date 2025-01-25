@@ -1,6 +1,5 @@
 from queue import PriorityQueue
 
-
 class Enemy:
     def __init__(self, start_position, goal, map_matrix, enemy_speed=3):
         self.position = start_position
