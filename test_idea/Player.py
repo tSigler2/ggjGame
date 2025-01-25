@@ -109,7 +109,9 @@ class Player:
             for img in sorted(os.listdir(path + "/" + k)):
                 self.anim_paths[k].append(pg.image.load(path + "/" + k + "/" + img))
         else:
-            print(f"Warning: '{path + '/' + k}' directory not found, skipping animation loading.")
+            print(
+                f"Warning: '{path + '/' + k}' directory not found, skipping animation loading."
+            )
 
     def update(self):
         self.get_input()
