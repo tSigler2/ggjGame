@@ -1,11 +1,11 @@
 import pygame as pg
 import sys
-from GameLib.settings import UI
+from settings import UI
 from level1 import Level1
-from GameLib.Game import Game
-from GameLib.test import Test
+from Game import Game
+from test import Test
 from Menu.Button import Button
-from GameLib.settings import SettingsMenu
+from settings import SettingsMenu
 
 
 class Menu:

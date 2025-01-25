@@ -1,6 +1,6 @@
 import pygame as pg
 import sys
-from GameLib.Menu.Button import Button
+from Menu.Button import Button
 
 
 class EventHandler:

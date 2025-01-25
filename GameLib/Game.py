@@ -52,7 +52,7 @@ class Game:
             "xxx",
         )
 
-        house_sprite_path = "house.png"
+        house_sprite_path = "Assets/house.png"
         if not os.path.exists(house_sprite_path):
             print(f"Error: File '{house_sprite_path}' not found.")
             sys.exit(1)  # Exit the program if the file is not found
@@ -68,7 +68,7 @@ class Game:
             "xxx",
         )
 
-        self.sound_manager = SoundManager("GameLib/Assets/sounds")
+        self.sound_manager = SoundManager("Assets/sounds")
         self.sound_manager.load_music("TownTheme.mp3")
         self.sound_manager.play_music("TownTheme.mp3")
 
