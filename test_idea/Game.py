@@ -1,7 +1,9 @@
+# run this code via: `python -m test_idea.Game`
 import pygame as pg
 from test_idea.Map import *
 from test_idea.Player import Player
 import sys
+
 
 class Game:
     def __init__(self, dims, fps=60):
@@ -12,15 +14,23 @@ class Game:
         self.clock = pg.time.Clock()
         self.delta_time = 1
         self.glob_event = pg.USEREVENT
-        self.glob_tigger = False
+        self.glob_trigger = False
         pg.time.set_timer(self.glob_event, 40)
         self._end = False
-    
+
     def init(self):
-        self.map = Map()
-        self.map.get_map()
-        self.player = Player(self, "../GameLib/ball.png", "Assets", (self.map[0][0].x, self.map[0][0].y), 120, [0, 0], "", "")
-        
+        self.map = Map.get_map(self)
+        self.player = Player(
+            self,
+            "../GameLib/ball.png",
+            "Assets",
+            (self.map[0][0].x, self.map[0][0].y),
+            120,
+            [0, 0],
+            "",
+            "",
+        )
+
     def draw_map(self):
         for i in range(len(self.map)):
             for j in range(len(self.map[i])):
