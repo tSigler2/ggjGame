@@ -76,10 +76,12 @@ class Game:
             self.start_button.draw(self.screen)
             self.options_button.draw(self.screen)
 
-            if self.start_button.isClicked((mx, my)):
+            if self.click and self.start_button.isClicked((mx, my)):
+                self.click = False
                 self.game()
 
-            if self.options_button.isClicked((mx, my)):
+            if self.click and self.options_button.isClicked((mx, my)):
+                self.click = False
                 self.options()
 
             self.draw_text('Glasscord GGJ Game 2025', self.font, (255, 255, 255), self.screen, int(self.width  / 2) - 160, 20)
