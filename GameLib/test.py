@@ -1,34 +1,29 @@
-from GameLib.level1 import Game
-from Sprite.Sprite import SpriteObj
+import pygame as pg
+import sys
 
-
-class ExSprite(SpriteObj):
-    def __init__(self, game, path, pos, scale, shift, velocity):
-        super().__init__(game, path, pos, scale, shift)
-        self.dx, self.dy = velocity
-
-    def update(self):
-        if self.x <= 0 or (self.x + self.IMAGE_HEIGHT) >= self.game.width:
-            self.dx *= -1
-        if self.y <= 0 or (self.y + self.IMAGE_HEIGHT) >= self.game.height:
-            self.dy *= -1
-
-        self.x += self.dx * self.game.delta_time
-        self.y += self.dy * self.game.fps
-        super().get_sprite()
-
-
-class GameType(Game):
+class Test:
     def __init__(self, dims, fps=60):
-        super().__init__(dims, fps)
-        self.obj = ExSprite(self, "ball.png", (320, 240), 1, 0, (0.3, 0.1))
+        pg.init()
+        self.width, self.height = dims
+        self.fps = fps
+        self.screen = pg.display.set_mode(dims)
+        pg.display.set_caption("Test")
+        self.clock = pg.time.Clock()
+
 
     def update(self):
-        self.screen.fill("black")
-        self.obj.update()
-        super().update()
+        self.screen.fill((0, 0, 0))  # this sets the background color (black is 0, 0, 0)
 
 
-if __name__ == "__main__":
-    game = GameType((640, 480))
-    game.run()
+        pg.display.flip()  # this refreshes the display
+
+    def run(self):
+        while True:
+            for event in pg.event.get():  # this handles events like quitting
+                if event.type == pg.QUIT:
+                    pg.quit()
+                    sys.exit()
+
+            self.update()  # this handles the update game state
+
+            self.clock.tick(self.fps)  # this caps the frame rate

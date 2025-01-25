@@ -3,6 +3,7 @@ import sys
 from GameLib.level1 import Level1
 from GameLib.level2 import Level2
 from GameLib.level3 import Level3
+from GameLib.test import Test
 from GameLib.Menu.Button import Button
 
 class Menu:
@@ -33,6 +34,7 @@ class Menu:
         self.start_button = Button(150, 400, 150, 50)
         self.options_button = Button(350, 400, 150, 50)
         self.quit_button = Button(550, 400, 150, 50)
+        self.test_button = Button(350, 200, 150, 50)
 
 
     def handle_input(self):
@@ -50,6 +52,10 @@ class Menu:
 
                 if event.button == 1 and self.start_button.isClicked((mx, my)):
                     Level1((800, 600)).run()
+
+                if event.button == 1 and self.test_button.isClicked((mx, my)):
+                    Test((800, 600)).run()
+                    
 
             # check for mouse click on the test level button if enabled
             if (
@@ -75,11 +81,13 @@ class Menu:
         self.start_button.draw(self.screen)
         self.options_button.draw(self.screen)
         self.quit_button.draw(self.screen)
+        self.test_button.draw(self.screen)
 
 
         self.draw_text('Bubble Blast Deluxe Unlimited Edition ft. Glasscord Team', self.font, (255, 255, 255), self.screen, int(self.width  / 2) - 393, 20)
         self.draw_text('Start Game', self.font, (255, 255, 255), self.screen, 155, 415)
         self.draw_text('Options', self.font, (255, 255, 255), self.screen, 375, 415)
+        self.draw_text('Test', self.font, (255, 255, 255), self.screen, 395, 215)
         self.draw_text('Quit', self.font, (255, 255, 255), self.screen, 595, 415)
 
         pg.display.flip()  # update the screen
