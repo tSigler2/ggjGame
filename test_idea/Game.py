@@ -1,5 +1,6 @@
 import pygame as pg
 from Map import *
+from Player import Player
 import sys
 
 class Game:
@@ -17,6 +18,7 @@ class Game:
     
     def init(self):
         self.map = get_map(self)
+        self.player = Player(self, "../GameLib/ball.png", "Assets", (self.map[0][0].x, self.map[0][0].y), 120, [0, 0], "", "")
         
     def draw_map(self):
         for i in range(len(self.map)):
@@ -34,6 +36,7 @@ class Game:
 
     def update(self):
         self.draw_map()
+        self.player.update()
         pg.display.flip()
         self.delta_time = self.clock.tick(self.fps)
         pg.display.set_caption(f"{self.delta_time}")
@@ -46,5 +49,5 @@ class Game:
 
 
 if __name__ == "__main__":
-    game = Game((640, 480))
+    game = Game((1280, 720))
     game.run()
