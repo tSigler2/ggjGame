@@ -19,7 +19,6 @@ class Game:
         pg.time.set_timer(self.glob_event, 40)
         self._end = False
 
-        self.click = False
         self.running = False
         self.font = pg.font.SysFont("Consolas", 25)
 
@@ -54,43 +53,7 @@ class Game:
                 sys.exit()
             elif e.type == self.glob_event:
                 self.glob_trigger = True
-            elif e.type == MOUSEBUTTONDOWN:
-                if e.button == 1:
-                    self.click = True
-            elif e.type == pg.KEYDOWN:
-                if e.key == pg.K_ESCAPE:
-                    self.running = False
-    
-    def draw_text(self, text, font, color, surface, x, y):
-        text_obj = font.render(text, 1, color)
-        text_rect = text_obj.get_rect()
-        text_rect.topleft = (x,y)
-        surface.blit(text_obj, text_rect)
-
-    def main_menu(self):
-        while True:
-            self.screen.fill((0,0,0))
- 
-            mx, my = pg.mouse.get_pos()
-
-            self.start_button.draw(self.screen)
-            self.options_button.draw(self.screen)
-
-            if self.click and self.start_button.isClicked((mx, my)):
-                self.click = False
-                self.game()
-
-            if self.click and self.options_button.isClicked((mx, my)):
-                self.click = False
-                self.options()
-
-            self.draw_text('Glasscord GGJ Game 2025', self.font, (255, 255, 255), self.screen, int(self.width  / 2) - 160, 20)
-            self.draw_text('Start Game', self.font, (255, 255, 255), self.screen, 155, 415)
-            self.draw_text('Options', self.font, (255, 255, 255), self.screen, 375, 415)
-
-            self.check_events()
-            self.update()
-
+           
     def draw_map(self):
         for i in range(len(self.map)):
             for j in range(len(self.map[i])):
@@ -125,7 +88,7 @@ class Game:
             
     def run(self):
         self.init()
-        self.main_menu()
+        self.game()
 
 if __name__ == '__main__':
     game = Game((1280, 720))
