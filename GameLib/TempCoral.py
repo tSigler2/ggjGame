@@ -1,5 +1,5 @@
 import pygame as pg
-from Sprite.MultiAnimatedSprite import MultiAnimatedSprite
+from GameLib.Sprite.TempMultiAnimatedSprite import MultiAnimatedSprite
 
 class Coral(MultiAnimatedSprite):
     def __init__(self, game, health, coords, damage, path, animation_time, *args):

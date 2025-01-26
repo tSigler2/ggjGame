@@ -2,11 +2,11 @@
 import pygame as pg
 import sys
 from pygame.locals import *
-from Player import *
-from House import *
-from Menu.Button import Button
-from Map import *
-from Util.Sound import SoundManager
+from GameLib.TempPlayer import *
+from GameLib.TempHouse import *
+from GameLib.Menu.TempButton import Button
+from GameLib.TempMap import *
+from GameLib.Util.TempSound import SoundManager
 import os
 
 

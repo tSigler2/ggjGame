@@ -1,6 +1,6 @@
 # To run the game, use this command:
 # python -m GameLib.main
-from GameLib.MainMenu import Menu
+from GameLib.TempMainMenu import Menu
 import os
 
 if __name__ == "__main__":

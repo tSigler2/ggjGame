@@ -1,6 +1,6 @@
 import pygame as pg
 import sys
-from GameLib.Menu.Button import Button
+from GameLib.Menu.TempButton import Button
 
 
 class Slider:
