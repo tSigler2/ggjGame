@@ -52,7 +52,12 @@ class Game:
             "xxx",
         )
 
-        house_sprite_path = "Assets/house.png"
+        # Get the directory where the current script is located
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        # Build the path to the 'Assets' folder
+        assets_dir = os.path.join(base_dir, "Assets")
+        # Load the house.png file
+        house_sprite_path = os.path.join(assets_dir, "house.png")
         if not os.path.exists(house_sprite_path):
             print(f"Error: File '{house_sprite_path}' not found.")
             sys.exit(1)  # Exit the program if the file is not found
@@ -68,9 +73,14 @@ class Game:
             "xxx",
         )
 
+        # Change this line:
         self.sound_manager = SoundManager("Assets/sounds")
-        self.sound_manager.load_music("TownTheme.mp3")
-        self.sound_manager.play_music("TownTheme.mp3")
+
+        # To this:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        sounds_dir = os.path.join(base_dir, "Assets", "sounds")
+
+        self.sound_manager = SoundManager(sounds_dir)
 
     def check_events(self):
         self.glob_trigger = False
