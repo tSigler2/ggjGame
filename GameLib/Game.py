@@ -32,6 +32,7 @@ class Game:
 
         self.start_button = Button(150, 400, 150, 50)
         self.options_button = Button(350, 400, 150, 50)
+        self.coral_button = Button(150, 400, 150, 50)
         self.frame_count = 0
 
     def init(self):
@@ -121,6 +122,7 @@ class Game:
         self.running = True
         while self.running:
             self.screen.blit(self.background, (0, 0))
+            self.start_button.draw(self.screen)
             self.draw_map()
             self.player.update()
             self.house.update()
@@ -128,6 +130,7 @@ class Game:
             self.coral_manager.update_coral()
             self.check_events()
             self.update()
+
 
     def options(self):
         self.running = True

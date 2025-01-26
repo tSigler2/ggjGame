@@ -13,9 +13,9 @@ class CoralManager:
         kill_list = []
         for coral in range(len(self.coral_list)):
             if self.coral_list[coral].health <= 0:
-                kill.list.append(coral)
+                self.kill.list.append(coral)
             else:
                 coral.update()
 
         for k in kill_list:
-            coral_list.pop(k)
+            self.coral_list.pop(k)

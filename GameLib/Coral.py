@@ -1,9 +1,11 @@
 import pygame as pg
+import os
 from Sprite.MultiAnimatedSprite import MultiAnimatedSprite
+from collections import deque
 
 class Coral(MultiAnimatedSprite):
     def __init__(self, game, health, coords, damage, path, animation_time, *args):
-        super().__init__(game, path, coords, 1, 0, animationed_time, args)
+        super().__init__(game, path, coords, 1, 0, animation_time, args)
         self.game = game
         self.health = health
         self.damage = damage
@@ -97,7 +99,7 @@ class Coral(MultiAnimatedSprite):
     def check_anim_time(self):
        curr_time = pg.time.get_ticks()
 
-       if curr_time - self.prev_anim_time >= anim_time:
+       if curr_time - self.prev_anim_time >= self.anim_time:
            self.prev_anim_time = curr_time
            self.anim_tigger = True
 
