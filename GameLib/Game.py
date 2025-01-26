@@ -1,3 +1,4 @@
+# File: GameLib\Game.py
 import pygame as pg
 import sys
 from pygame.locals import *
@@ -60,7 +61,6 @@ class Game:
             (self.map[0][0].x, self.map[0][0].y),
             120,
             [0, 0],
-            0,
             0,
             "walk",  # Adjust this to match the correct animation group, if necessary
         )
