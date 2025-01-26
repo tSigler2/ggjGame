@@ -20,7 +20,6 @@ class Enemy(MultiAnimatedSprite):
     ):
         self.anim_paths = {}
         self.dump_animations(path, args)
-        print(self.anim_paths)
         self.animation_time = animation_time
         self.animation_trigger = False
 
@@ -43,13 +42,11 @@ class Enemy(MultiAnimatedSprite):
         self.rect = pg.Rect(self.x, self.y, 50, 50)
 
     def dump_animations(self, path, *args):
-        print(args)
         for k in args[0]:
             self.anim_paths[k] = deque()
             full_path = os.path.join(
                 path, k
             )  # Correctly construct the full path to the folder
-            print(full_path)
 
             # Check if the directory exists
             if os.path.exists(full_path):

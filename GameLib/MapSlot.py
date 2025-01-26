@@ -12,6 +12,8 @@ class Space:
         self.occupied = False
         self.occupant = None
 
+        self.rect = pg.Rect(self.x, self.y, self.h, self.w)
+
     def draw(self):
         self.game.screen.blit(self.sprite, (self.x, self.y))
 
