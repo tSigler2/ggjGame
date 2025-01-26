@@ -83,40 +83,32 @@ class Player(MultiAnimatedSprite):
         if self.health <= 0:
             self.respawn_player()
 
+    # File: GameLib\Player.py
+
+
     def get_input(self):
         keys = pg.key.get_pressed()  # Get all the keys currently pressed
         mouse_buttons = pg.mouse.get_pressed()
         curr_time = pg.time.get_ticks()
 
-        if (keys[pg.K_w] or keys[pg.K_UP]) and (  # Move up
-            curr_time - self.prev_move_time
-        ) >= 100:
+        # Process movement based on key presses
+        if (keys[pg.K_w] or keys[pg.K_UP]) and (curr_time - self.prev_move_time) >= 100:
             self.prev_move_time = curr_time
             self.pos[1] -= self.speed  # Update y in pos list
 
-        if (keys[pg.K_s] or keys[pg.K_DOWN]) and (  # Move down
-            curr_time - self.prev_move_time
-        ) >= 100:
+        if (keys[pg.K_s] or keys[pg.K_DOWN]) and (curr_time - self.prev_move_time) >= 100:
             self.prev_move_time = curr_time
             self.pos[1] += self.speed  # Update y in pos list
 
-        if (keys[pg.K_d] or keys[pg.K_RIGHT]) and (  # Move right
-            curr_time - self.prev_move_time
-        ) >= 100:
+        if (keys[pg.K_d] or keys[pg.K_RIGHT]) and (curr_time - self.prev_move_time) >= 100:
             self.prev_move_time = curr_time
             self.pos[0] += self.speed  # Update x in pos list
 
-        if (keys[pg.K_a] or keys[pg.K_LEFT]) and (  # Move left
-            curr_time - self.prev_move_time
-        ) >= 100:
+        if (keys[pg.K_a] or keys[pg.K_LEFT]) and (curr_time - self.prev_move_time) >= 100:
             self.prev_move_time = curr_time
-            self.coords[0] -= 1
-            self.move(
-                (
-                    self.game.map[self.coords[0]][self.coords[1]].x,
-                    self.game.map[self.coords[0]][self.coords[1]].y,
-                )
-            )
+            self.pos[0] -= self.speed  # Update x in pos list
+
+        # Handle attack based on mouse button press
         if mouse_buttons[0]:
             if self.countdown >= 2000:
                 self.countdown = 0

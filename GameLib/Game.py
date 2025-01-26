@@ -150,36 +150,15 @@ class Game:
         self.init()
         self.game()
 
+    def handle_input(self):
+        self.player.get_input()  # Let Player.py handle the input
+
     def update(self):
         self.frame_count += 1
+        self.player.update()  # Make sure to call update for player, which includes input handling
         pg.display.flip()
         self.delta_time = self.clock.tick(self.fps)
         pg.display.set_caption(f"SquirrelyPop")
-
-    def handle_input(self):
-        keys = pg.key.get_pressed()  # Get the keys pressed
-
-        # Move up
-        if keys[pg.K_UP] or keys[pg.K_w]:
-            self.player.pos[1] -= self.player.speed
-        # Move down
-        if keys[pg.K_DOWN] or keys[pg.K_s]:
-            self.player.pos[1] += self.player.speed
-        # Move left
-        if keys[pg.K_LEFT] or keys[pg.K_a]:
-            self.player.pos[0] -= self.player.speed
-        # Move right
-        if keys[pg.K_RIGHT] or keys[pg.K_d]:
-            self.player.pos[0] += self.player.speed
-
-        # Prevent the player from going off the screen
-        self.player.pos[0] = max(
-            self.player.radius, min(self.width - self.player.radius, self.player.pos[0])
-        )
-        self.player.pos[1] = max(
-            self.player.radius,
-            min(self.height - self.player.radius, self.player.pos[1]),
-        )
 
     def game(self):
         self.running = True
