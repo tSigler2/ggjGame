@@ -3,6 +3,7 @@ from collections import deque
 import pygame as pg
 import os
 import sys
+import math
 from Sprite.MultiAnimatedSprite import MultiAnimatedSprite
 
 
@@ -115,9 +116,18 @@ class Player(MultiAnimatedSprite):
 
         # Handle attack based on mouse button press
         if mouse_buttons[0]:
+            mouse_pos = pg.mouse.get_pos()
             if self.countdown >= 2000:
                 self.countdown = 0
                 self.attack_anim_trigger = 6  # Trigger the attack animation
+            for enemy in self.game.enemyManager.enemy_list:
+                if (
+                    enemy.rect.collidepoint(mouse_pos)
+                    and abs(self.coords[0] - enemy.position[0])
+                    + abs(self.coords[1] - enemy.position[1])
+                    <= 2
+                ):
+                    enemy.update_health(-1)
 
 
     def move(self):
@@ -187,5 +197,5 @@ class Player(MultiAnimatedSprite):
         speed_text = f"Speed X: {self.vel_x:.2f} Y: {self.vel_y:.2f}"
         text_surface = self.game.font.render(speed_text, True, (255, 255, 255))
         self.game.screen.blit(text_surface, (10, 10))  # Adjust position as needed
-
+        
         self.draw(self.sprite)

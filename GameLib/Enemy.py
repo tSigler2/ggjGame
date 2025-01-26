@@ -1,5 +1,9 @@
 from queue import PriorityQueue
+from collections import deque
 from Sprite.MultiAnimatedSprite import MultiAnimatedSprite
+import os
+import pygame as pg
+
 
 class Enemy(MultiAnimatedSprite):
     def __init__(
@@ -11,36 +15,49 @@ class Enemy(MultiAnimatedSprite):
         map_matrix,
         path,
         animation_time,
+        *args,
         enemy_speed=3,
-        *args
     ):
-        self.anim_paths =  {}
+        self.anim_paths = {}
         self.dump_animations(path, args)
+        print(self.anim_paths)
         self.animation_time = animation_time
         self.animation_trigger = False
 
         self.game = game
         self.health = health
         self.position = start_position
+        self.x, self.y = (
+            self.game.map[self.position[0]][self.position[1]].x,
+            self.game.map[self.position[0]][self.position[1]].y,
+        )
         self.goal = goal
         self.map_matrix = map_matrix
         self.enemy_speed = enemy_speed
         self.path = []
+        self.prev_anim_time = pg.time.get_ticks()
         self.index = 0
         self.curr_deque = self.anim_paths["walk"]
         self.move_counter = 0
         self.find_path()
+        self.rect = pg.Rect(self.x, self.y, 50, 50)
 
     def dump_animations(self, path, *args):
+        print(args)
         for k in args[0]:
             self.anim_paths[k] = deque()
-            full_path = os.path.join(path, k)  # Correctly construct the full path to the folder
+            full_path = os.path.join(
+                path, k
+            )  # Correctly construct the full path to the folder
+            print(full_path)
 
             # Check if the directory exists
             if os.path.exists(full_path):
                 for img in sorted(os.listdir(full_path)):
                     if img.endswith(".png"):  # Make sure to only load PNG files
-                        self.anim_paths[k].append(pg.image.load(os.path.join(full_path, img)))
+                        self.anim_paths[k].append(
+                            pg.image.load(os.path.join(full_path, img))
+                        )
             else:
                 print(
                     f"Warning: '{full_path}' directory not found, skipping animation loading."
@@ -123,15 +140,20 @@ class Enemy(MultiAnimatedSprite):
 
     def update(self):
         self.check_anim_time()
-        
-        if self.position == (5, 6) or self.position == (7, 6) or self.position == (6, 5) or self.position == (6, 7):
-            self.curr_deque = self.anim_paths['attack']
+
+        if (
+            self.position == (5, 6)
+            or self.position == (7, 6)
+            or self.position == (6, 5)
+            or self.position == (6, 7)
+        ):
+            self.curr_deque = self.anim_paths["attack"]
         else:
+            self.curr_deque = self.anim_paths["walk"]
             self.move()
 
         if self.animation_trigger:
             self.animate()
 
-            if self.curr_deque == self.anim_paths['attack']:
+            if self.curr_deque == self.anim_paths["attack"]:
                 self.game.house.health -= 1
-
