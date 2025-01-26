@@ -57,6 +57,8 @@ class Player(MultiAnimatedSprite):
         # Attack variables
         self.attack_anim_trigger = 0
         self.attack_in_progress = False
+        self.countdown = 2000
+        self.coral_toggle = False
 
         # Initialize velocity attributes
         self.vel_x = 0
@@ -125,14 +127,25 @@ class Player(MultiAnimatedSprite):
             if self.countdown >= 2000:
                 self.countdown = 0
                 self.attack_anim_trigger = 6  # Trigger the attack animation
-            for enemy in self.game.enemyManager.enemy_list:
-                if (
-                    enemy.rect.collidepoint(mouse_pos)
-                    and abs(self.coords[0] - enemy.position[0])
-                    + abs(self.coords[1] - enemy.position[1])
-                    <= 2
-                ):
-                    enemy.update_health(-1)
+            if not self.coral_toggle:
+                for enemy in self.game.enemyManager.enemy_list:
+                    if (
+                        enemy.rect.collidepoint(mouse_pos)
+                        and abs(self.coords[0] - enemy.position[0])
+                        + abs(self.coords[1] - enemy.position[1])
+                        <= 2
+                    ):
+                        enemy.update_health(-1)
+            else:
+                coords = None
+                for x in range(len(self.game.map)):
+                    for y in range(len(x)):
+                        if y.collidepoint(mouse_pos):
+                            coords = (x, y)
+                            break
+                    if coords != None:
+                        break
+                self.game.coral_manager.add_coral(5, 2, coords, "Assets/coral", 120, "std")
 
 
 
@@ -180,7 +193,6 @@ class Player(MultiAnimatedSprite):
         if self.attack_anim_trigger > 0:
             self.attack_in_progress = True
             self.attack_anim_trigger -= 1
-            print(self.anim_paths)
             attack_frame = self.anim_paths["attack"][0]
             self.anim_paths["attack"].rotate(-1)
             self.sprite = (

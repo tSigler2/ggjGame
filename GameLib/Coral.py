@@ -1,5 +1,5 @@
 import pygame as pg
-from GameLib.Sprite.MultiAnimatedSprite import MultiAnimatedSprite
+from Sprite.MultiAnimatedSprite import MultiAnimatedSprite
 
 class Coral(MultiAnimatedSprite):
     def __init__(self, game, health, coords, damage, path, animation_time, *args):
@@ -8,6 +8,33 @@ class Coral(MultiAnimatedSprite):
         self.health = health
         self.damage = damage
         self.x, self.y = coords
+
+        self.animations = {}
+        self.dump_animations(path, args[0])
+        self.animation_trigger = False
+        self.curr_deque = self.animation['std']
+        self.prev_anim_time = pg.time.get_ticks()
+        self.anim_trigger = False
+        
+
+    def dump_animations(self, path, *args):
+        for k in args[0]:
+            self.anim_paths[k] = deque()
+            full_path = os.path.join(
+                path, k
+            )  # Correctly construct the full path to the folder
+
+            # Check if the directory exists
+            if os.path.exists(full_path):
+                for img in sorted(os.listdir(full_path)):
+                    if img.endswith(".png"):  # Make sure to only load PNG files
+                        self.anim_paths[k].append(
+                            pg.image.load(os.path.join(full_path, img))
+                        )
+            else:
+                print(
+                    f"Warning: '{full_path}' directory not found, skipping animation loading."
+                )
 
     def damage(self):
         dam_list = []
@@ -66,7 +93,20 @@ class Coral(MultiAnimatedSprite):
 
     def take_damage(self, val):
         self.health -= 1
+    
+    def check_anim_time(self):
+       curr_time = pg.time.get_ticks()
+
+       if curr_time - self.prev_anim_time >= anim_time:
+           self.prev_anim_time = curr_time
+           self.anim_tigger = True
 
     def update(self):
-        self.animate()
+        self.check_anim_time()
+
+        if self.anim_trigger:
+            self.curr_deque.rotate(-1)
+            self.anim_trigger = False
+        self.game.screen.blit(self.curr_deque[0], (self.x, self.y))
+
         self.damage()

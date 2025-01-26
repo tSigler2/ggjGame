@@ -8,6 +8,7 @@ from Menu.Button import Button
 from Map import *
 from Util.Sound import SoundManager
 from EnemyManager import EnemyManager
+from CoralManager import CoralManager
 import os
 
 
@@ -23,6 +24,8 @@ class Game:
         self.glob_trigger = False
         pg.time.set_timer(self.glob_event, 40)
         self._end = False
+
+        self.background = pg.transform.scale(pg.image.load("GameLib/Assets/background.png").convert_alpha(), dims)
 
         self.running = False
         self.font = pg.font.SysFont("Consolas", 25)
@@ -117,6 +120,8 @@ class Game:
         sounds_dir = os.path.join(self.base_dir, "Assets", "sounds")
         self.sound_manager = SoundManager(sounds_dir)
 
+        self.coral_manager = CoralManager(self)
+
     def check_events(self):
         self.glob_trigger = False
         self.click = False
@@ -162,12 +167,13 @@ class Game:
     def game(self):
         self.running = True
         while self.running:
-            self.screen.fill((0, 0, 0))
+            self.screen.blit(self.background, (0, 0))
             self.draw_map()
             self.handle_input()  # Call handle_input to move the player
             self.player.update()
             self.house.update()
             self.enemyManager.update()
+            self.coral_manager.update_coral()
             self.check_events()
             self.update()
 
