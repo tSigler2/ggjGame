@@ -70,6 +70,19 @@ class Game:
             "walk",  # Adjust this to match the correct animation group, if necessary
         )
 
+        # Define the tile size (this should be the actual tile size in pixels)
+        tile_size = 64  # Example, adjust this to match the actual tile size
+
+        # Calculate the center of the grid (tile position 5,5 on a 11x11 grid)
+        center_x = 5  # Middle column for 11 tiles
+        center_y = 5  # Middle row for 11 tiles
+
+        # Calculate the position of the center of the house sprite
+        house_position = (
+            center_x * tile_size,  # X position of the center tile
+            center_y * tile_size   # Y position of the center tile
+        )
+
         # Initialize the house object
         house_sprite_path = os.path.join(self.assets_dir, "house", "house.png")
         self.house = House(
@@ -77,7 +90,7 @@ class Game:
             health=100,
             init_sprite=house_sprite_path,
             animation_path="path_to_animation",  # Replace with actual path if needed
-            pos=(100, 100),  # Example position, update as necessary
+            pos=house_position,  # Set house to center of the grid
             animation_time=200,  # Example time
             coords=[(0, 0)],  # Example coordinates, update as necessary
         )
