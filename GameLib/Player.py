@@ -91,28 +91,29 @@ class Player(MultiAnimatedSprite):
         mouse_buttons = pg.mouse.get_pressed()
         curr_time = pg.time.get_ticks()
 
-        # Process movement based on key presses
+        # Process movement based on key presses and delta_time for smooth, frame-rate independent movement
         if (keys[pg.K_w] or keys[pg.K_UP]) and (curr_time - self.prev_move_time) >= 100:
             self.prev_move_time = curr_time
-            self.pos[1] -= self.speed  # Update y in pos list
+            self.pos[1] -= self.speed * self.game.delta_time  # Apply delta_time for consistent movement
 
         if (keys[pg.K_s] or keys[pg.K_DOWN]) and (curr_time - self.prev_move_time) >= 100:
             self.prev_move_time = curr_time
-            self.pos[1] += self.speed  # Update y in pos list
+            self.pos[1] += self.speed * self.game.delta_time  # Apply delta_time for consistent movement
 
         if (keys[pg.K_d] or keys[pg.K_RIGHT]) and (curr_time - self.prev_move_time) >= 100:
             self.prev_move_time = curr_time
-            self.pos[0] += self.speed  # Update x in pos list
+            self.pos[0] += self.speed * self.game.delta_time  # Apply delta_time for consistent movement
 
         if (keys[pg.K_a] or keys[pg.K_LEFT]) and (curr_time - self.prev_move_time) >= 100:
             self.prev_move_time = curr_time
-            self.pos[0] -= self.speed  # Update x in pos list
+            self.pos[0] -= self.speed * self.game.delta_time  # Apply delta_time for consistent movement
 
         # Handle attack based on mouse button press
         if mouse_buttons[0]:
             if self.countdown >= 2000:
                 self.countdown = 0
                 self.attack_anim_trigger = 6  # Trigger the attack animation
+
 
     def move(self, val):
         self.pos = list(val)  # Ensure the new position is a list
