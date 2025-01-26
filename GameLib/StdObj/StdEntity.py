@@ -1,6 +1,6 @@
 import pygame as pg
-from StdObj.MoveableObj import MoveableObj
-from StdObj.CollidableObj import CollidableObj
+from GameLib.StdObj.MoveableObj import MoveableObj
+from GameLib.StdObj.CollidableObj import CollidableObj
 
 
 class StdEntity(MoveableObj, CollidableObj):

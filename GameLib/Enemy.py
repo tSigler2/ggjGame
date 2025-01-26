@@ -1,5 +1,5 @@
 from queue import PriorityQueue
-from Sprite.MultiAnimatedSprite import MultiAnimatedSprite
+from GameLib.Sprite.MultiAnimatedSprite import MultiAnimatedSprite
 
 
 class Enemy(MultiAnimatedSprite):
@@ -36,7 +36,7 @@ class Enemy(MultiAnimatedSprite):
 
         if self.health <= 0:
             self.game.map[self.position[0]][self.position[1]].occupied = False
-            self.game.map[self.position[0]][self.position[1]].occupant = Null
+            self.game.map[self.position[0]][self.position[1]].occupant = None
             self.kill()
             self.game.player.get_money(1)
 

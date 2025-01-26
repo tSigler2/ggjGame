@@ -22,6 +22,8 @@ class Player:
         self.game = game
         self.health = health
         self.range = range
+        self.clock = pg.time.Clock()
+        self.countdown = 0
 
         # Check if the sprite file exists before loading it
         if not os.path.exists(init_sprite):
@@ -46,9 +48,12 @@ class Player:
 
         self.health = health
         self.money = money
-
+    
     def draw(self):
         self.game.screen.blit(self.sprite, (self.x, self.y))
+
+    def respawn_player(self):
+        self.pos = self.game.house.pos
 
     def get_money(self, val):
         self.money += val
@@ -64,7 +69,7 @@ class Player:
         self.health -= damage
 
         if self.health <= 0:
-            self.kill()
+            self.respawn_player
 
     def get_input(self):
         keys = pg.key.get_pressed()
@@ -129,16 +134,38 @@ class Player:
     def dump_animations(self, path, *args):
         for k in args[0]:
             self.anim_paths[k] = deque()
+            full_path = os.path.join(path, k)  # Correctly construct the full path to the folder
+
             # Check if the directory exists
-        if os.path.exists(path + "/" + k):
-            for img in sorted(os.listdir(path + "/" + k)):
-                self.anim_paths[k].append(pg.image.load(path + "/" + k + "/" + img))
-        else:
-            print(
-                f"Warning: '{path + '/' + k}' directory not found, skipping animation loading."
-            )
+            if os.path.exists(full_path):
+                for img in sorted(os.listdir(full_path)):
+                    if img.endswith(".png"):  # Make sure to only load PNG files
+                        self.anim_paths[k].append(pg.image.load(os.path.join(full_path, img)))
+            else:
+                print(
+                    f"Warning: '{full_path}' directory not found, skipping animation loading."
+                )
 
     def update(self):
         self.get_input()
         self.check_anim_time()
+
+        self.dt = self.clock.tick()
+        self.countdown += self.dt
+
+        if self.countdown > 50000:
+            self.respawn_player()
+            self.countdown = 0
+        
+        # Update animation frame if it's time
+        if self.animation_trigger:
+            self.animation_trigger = False  # Reset trigger
+            # Loop through animation frames in the 'walk' group
+            walk_frames = self.anim_paths.get("walk", [])
+            if walk_frames:
+                # Rotate through the frames for walking
+                current_frame = walk_frames.popleft()
+                walk_frames.append(current_frame)  # Push frame to the back for next time
+                self.sprite = current_frame  # Set the current frame as the sprite
+        
         self.draw()

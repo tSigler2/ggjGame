@@ -4,7 +4,7 @@ import pygame as pg
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from Sprite.Sprite import SpriteObj
+from GameLib.Sprite.Sprite import SpriteObj
 
 
 class Button(SpriteObj):
