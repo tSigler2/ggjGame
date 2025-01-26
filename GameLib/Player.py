@@ -3,7 +3,7 @@ from collections import deque
 import os
 import pygame as pg
 import sys
-from GameLib.Sprite.MultiAnimatedSprite import MultiAnimatedSprite
+from Sprite.MultiAnimatedSprite import MultiAnimatedSprite
 
 
 class Player(MultiAnimatedSprite):
@@ -23,6 +23,8 @@ class Player(MultiAnimatedSprite):
         self.game = game
         self.health = health
         self.range = range
+        self.clock = pg.time.Clock()
+        self.countdown = 0
 
         # Check if the sprite file exists before loading it
         if not os.path.exists(init_sprite):
@@ -48,14 +50,18 @@ class Player(MultiAnimatedSprite):
         self.health = health
         self.money = money
 
-        self.attack_anim_trigger = False
+        self.attack_anim_trigger = 0
 
         self.clock = pg.time.Clock()
         self.attack_in_progress = False
         self.countdown = 2000
 
-    def draw(self):
+    
+    def draw(self, sprite):
         self.game.screen.blit(self.sprite, (self.x, self.y))
+
+    def respawn_player(self):
+        self.pos = self.game.house.pos
 
     def get_money(self, val):
         self.money += val
@@ -71,7 +77,7 @@ class Player(MultiAnimatedSprite):
         self.health -= damage
 
         if self.health <= 0:
-            self.kill()
+            self.respawn_player
 
     def get_input(self):
         keys = pg.key.get_pressed()
@@ -133,7 +139,7 @@ class Player(MultiAnimatedSprite):
         if mouse_buttons[0]:
             if self.countdown >= 2000:
                 self.countdown = 0
-                self.attack_anim_trigger = True  # Trigger the attack animation
+                self.attack_anim_trigger = 6 # Trigger the attack animation
 
     def move(self, val):
         self.x, self.y = val
@@ -142,6 +148,7 @@ class Player(MultiAnimatedSprite):
         for k in args[0]:
             self.anim_paths[k] = deque()
             full_path = os.path.join(path, k)  # Correctly construct the full path to the folder
+            print(full_path, type(full_path))
 
             # Check if the directory exists
             if os.path.exists(full_path):
@@ -161,19 +168,25 @@ class Player(MultiAnimatedSprite):
 
         dt = self.clock.tick()
         self.countdown += dt
-        
-        if self.attack_anim_trigger:
-            self.attack_anim_trigger = False
-            self.attack_in_progress = True
-            attack_frames = self.anim_paths.get("attack", [])
+        self.check_anim_time()
 
-            if attack_frames:
-                current_frame = attack_frames.popleft()
-                attack_frames.append(current_frame)  # Loop back to the first frame after finishing
-                self.sprite = current_frame  # Update the sprite to the attack animation frame
+        self.dt = self.clock.tick()
+        self.countdown += self.dt
+
+        if self.countdown > 50000:
+            self.respawn_player()
+            self.countdown = 0
+        
+        if self.attack_anim_trigger > 0:
+            self.attack_in_progress = True
+            self.attack_anim_trigger -= 1
+            print(self.anim_paths)
+            attack_frame = self.anim_paths["attack"][0]
+            self.anim_paths["attack"].rotate(-1)
+            self.sprite = attack_frame# Update the sprite to the attack animation frame
             
-            self.attack_in_progress = False
-               
+            if self.attack_anim_trigger == 0:
+                self.attack_in_progress = False 
             
         elif self.animation_trigger:
             self.animation_trigger = False  # Reset trigger
@@ -185,4 +198,4 @@ class Player(MultiAnimatedSprite):
                 walk_frames.append(current_frame)  # Push frame to the back for next time
                 self.sprite = current_frame  # Set the current frame as the sprite
         
-        self.draw()
+        self.draw(self.sprite)

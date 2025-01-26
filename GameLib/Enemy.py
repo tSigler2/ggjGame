@@ -1,5 +1,5 @@
 from queue import PriorityQueue
-from GameLib.Sprite.MultiAnimatedSprite import MultiAnimatedSprite
+from Sprite.MultiAnimatedSprite import MultiAnimatedSprite
 
 
 class Enemy(MultiAnimatedSprite):

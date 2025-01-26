@@ -1,6 +1,6 @@
 import os
 import pygame as pg
-from GameLib.MapSlot import Space
+from MapSlot import Space
 
 
 class Map:
@@ -11,7 +11,7 @@ class Map:
 
         return [
             [
-                Space(game, asset_path, (i * 50 + 365, j * 50), (32, 32))
+                Space(game, asset_path, (i * 64 + 288, j * 64), (64, 64))
                 for j in range(11)
             ]
             for i in range(11)
