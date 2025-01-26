@@ -32,8 +32,13 @@ class Game:
     def init(self):
         self.map = Map.get_map(self)
 
-        # Check if the sprite file exists before creating the Player
-        player_sprite_path = "\ggjGame\GameLib\Assets\player\walk\JimmyWalkcycle1.png"
+        # Get the directory where the current script is located
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+
+        # Build the path to the player sprite file and check if it exists
+        player_sprite_path = os.path.join(
+            base_dir, "Assets", "player", "walk", "JimmyWalkcycle1.png"
+        )
         if not os.path.exists(player_sprite_path):
             print(f"Error: File '{player_sprite_path}' not found.")
             sys.exit(1)  # Exit the program if the file is not found
@@ -52,11 +57,8 @@ class Game:
             "xxx",
         )
 
-        # Get the directory where the current script is located
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-        # Build the path to the 'Assets' folder
+        # Build the path to the 'Assets' folder and load the house sprite
         assets_dir = os.path.join(base_dir, "Assets")
-        # Load the house.png file
         house_sprite_path = os.path.join(assets_dir, "House.png")
         if not os.path.exists(house_sprite_path):
             print(f"Error: File '{house_sprite_path}' not found.")
@@ -73,13 +75,8 @@ class Game:
             "xxx",
         )
 
-        # Change this line:
-        self.sound_manager = SoundManager("Assets/sounds")
-
-        # To this:
-        base_dir = os.path.dirname(os.path.abspath(__file__))
+        # Build the path to the 'Assets/sounds' folder and initialize the sound manager
         sounds_dir = os.path.join(base_dir, "Assets", "sounds")
-
         self.sound_manager = SoundManager(sounds_dir)
 
     def check_events(self):
@@ -104,9 +101,7 @@ class Game:
         pg.display.set_caption(f"SquirrelyPop")
 
     def game(self):
-
         self.running = True
-
         while self.running:
             self.screen.fill((0, 0, 0))
             self.draw_map()
@@ -116,9 +111,7 @@ class Game:
             self.update()
 
     def options(self):
-
         self.running = True
-
         while self.running:
             self.screen.fill((0, 0, 0))
             self.draw_text(
@@ -129,7 +122,6 @@ class Game:
                 int(self.width / 2) - 160,
                 20,
             )
-
             self.check_events()
             self.update()
 
