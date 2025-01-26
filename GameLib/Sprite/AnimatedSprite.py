@@ -2,7 +2,7 @@ import pygame as pg
 from collections import deque
 import os
 
-from GameLib.Sprite.TempSprite import SpriteObj
+from GameLib.Sprite.Sprite import SpriteObj
 
 
 

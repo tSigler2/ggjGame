@@ -1,33 +1,6 @@
-# File: GameLib\Settings.py
 import pygame as pg
 import sys
-from GameLib.Menu.TempButton import Button
-
-
-class EventHandler:
-    @staticmethod
-    def run():
-        EventHandler.events = pg.event.get()
-
-    @staticmethod
-    def clicked() -> bool:
-        return any(e.type == pg.MOUSEBUTTONDOWN for e in EventHandler.events)
-
-
-UNSELECTED = "red"
-SELECTED = "white"
-BUTTONSTATES = {True: SELECTED, False: UNSELECTED}
-
-
-class UI:
-    @staticmethod
-    def init(app):
-        UI.font = pg.font.SysFont("Consolas", 25)
-        UI.sfont = pg.font.SysFont("Consolas", 20)
-        UI.lfont = pg.font.SysFont("Consolas", 40)
-        UI.xlfont = pg.font.SysFont("Consolas", 50)
-        UI.center = (app.screen.get_size()[0] // 2, app.screen.get_size()[1] // 2)
-        UI.fonts = {"sm": UI.sfont, "m": UI.font, "l": UI.lfont, "xl": UI.xlfont}
+from GameLib.Menu.Button import Button
 
 
 class Slider:
@@ -53,7 +26,7 @@ class Slider:
             self.size[1],
         )
 
-        self.text = UI.fonts["m"].render(
+        self.text = pg.font.SysFont("Consolas", 25).render(
             str(int(self.get_value())), True, "white", None
         )
         self.label_rect = self.text.get_rect(
@@ -71,7 +44,7 @@ class Slider:
 
     def render(self, app):
         pg.draw.rect(app.screen, "darkgray", self.container_rect)
-        pg.draw.rect(app.screen, BUTTONSTATES[self.hovered()], self.button_rect)
+        pg.draw.rect(app.screen, "white", self.button_rect)
 
     def hovered(self):
         return self.container_rect.collidepoint(pg.mouse.get_pos())
@@ -82,7 +55,7 @@ class Slider:
         return (button_val / val_range) * (self.max - self.min) + self.min
 
     def display_value(self, app):
-        self.text = UI.fonts["m"].render(
+        self.text = pg.font.SysFont("Consolas", 25).render(
             str(int(self.get_value())), True, "white", None
         )
         app.screen.blit(self.text, self.label_rect)
@@ -117,13 +90,11 @@ class SettingsMenu:
         # Button for cycling difficulty
         self.difficulty_button = Button(350, 300, 150, 50)
 
-        # Create Slider for volume control
-        self.volume_slider = Slider(
-            (self.width // 2, 400), (200, 30), self.settings["Volume"] / 100, 0, 100
-        )
+        # Slider attributes
+        self.volume_slider = Slider((self.width // 2, 400), (200, 10), 50, 0, 100)
 
         # Load and play TownTheme.mp3 in a loop
-        self.music = pg.mixer.Sound("GameLib/Assets/sounds/TownTheme.mp3")
+        self.music = pg.mixer.Sound("GameLib/TownTheme.mp3")
         self.music.set_volume(
             self.settings["Volume"] / 100.0
         )  # Set initial volume (0.0 to 1.0)
@@ -150,7 +121,7 @@ class SettingsMenu:
                             self.current_difficulty_index
                         ]
 
-                    # Check if volume slider is clicked and update the volume
+                    # Check if slider is clicked and update the volume
                     if self.volume_slider.container_rect.collidepoint(mx, my):
                         self.volume_slider.grabbed = True
 
@@ -158,14 +129,10 @@ class SettingsMenu:
                 if event.button == 1:
                     self.volume_slider.grabbed = False
 
-            # Move the slider if it's being grabbed
-            if self.volume_slider.grabbed:
-                self.volume_slider.move_slider((mx, my))
-                # Update the settings volume based on the slider value
-                self.settings["Volume"] = int(self.volume_slider.get_value())
-
-                # Set the music volume based on the slider value (0 to 1)
-                self.music.set_volume(self.volume_slider.get_value() / 100.0)
+            elif event.type == pg.MOUSEMOTION:
+                # Update slider when it's grabbed
+                if self.volume_slider.grabbed:
+                    self.volume_slider.move_slider((mx, my))
 
     def draw_settings_menu(self):
         self.screen.fill((30, 30, 30))
@@ -195,15 +162,6 @@ class SettingsMenu:
             360,
             315,
         )
-        self.draw_text(
-            f"Volume: {self.settings['Volume']}",
-            self.font,
-            (255, 255, 255),
-            self.screen,
-            self.volume_slider.pos[0] - self.volume_slider.size[0] // 2 - 160,
-            self.volume_slider.pos[1] - 10,
-        )
-
         self.draw_text("Back", self.font, (255, 255, 255), self.screen, 390, 515)
 
         pg.display.flip()
