@@ -36,10 +36,28 @@ class Game:
     def init(self):
         self.map = Map.get_map(self)
 
-        # Ensure the assets directory exists before proceeding
-        if not os.path.exists(self.assets_dir):
-            print(f"Error: The assets directory '{self.assets_dir}' does not exist.")
-            sys.exit(1)
+        # Grid offsets for alignment
+        grid_start_x = (self.width - 11 * 50) // 2
+        grid_start_y = (self.height - 11 * 50) // 2
+
+        tile_size = 50  # Adjusted to grid logic
+        center_x, center_y = 5, 5  # Grid center
+
+        house_position = (
+            grid_start_x + center_x * tile_size,
+            grid_start_y + center_y * tile_size,
+        )
+
+        house_sprite_path = os.path.join(self.assets_dir, "house", "house.png")
+        self.house = House(
+            self,
+            health=100,
+            init_sprite=house_sprite_path,
+            animation_path="path_to_animation",
+            pos=house_position,
+            animation_time=200,
+            coords=[(0, 0)],
+        )
 
         # Get the path to the 'walk' folder
         walk_dir = os.path.join(self.assets_dir, "player", "walk")
@@ -70,31 +88,6 @@ class Game:
             "walk",  # Adjust this to match the correct animation group, if necessary
         )
 
-        # Define the tile size (this should be the actual tile size in pixels)
-        tile_size = 64  # Example, adjust this to match the actual tile size
-
-        # Calculate the center of the grid (tile position 5,5 on a 11x11 grid)
-        center_x = 5  # Middle column for 11 tiles
-        center_y = 5  # Middle row for 11 tiles
-
-        # Calculate the position of the center of the house sprite
-        house_position = (
-            center_x * tile_size,  # X position of the center tile
-            center_y * tile_size   # Y position of the center tile
-        )
-
-        # Initialize the house object
-        house_sprite_path = os.path.join(self.assets_dir, "house", "house.png")
-        self.house = House(
-            self,
-            health=100,
-            init_sprite=house_sprite_path,
-            animation_path="path_to_animation",  # Replace with actual path if needed
-            pos=house_position,  # Set house to center of the grid
-            animation_time=200,  # Example time
-            coords=[(0, 0)],  # Example coordinates, update as necessary
-        )
-
     def check_events(self):
         self.glob_trigger = False
         self.click = False
@@ -109,6 +102,9 @@ class Game:
         for i in range(len(self.map)):
             for j in range(len(self.map[i])):
                 self.map[i][j].draw()
+                # Draw grid lines for debugging
+                rect = pg.Rect(self.map[i][j].x, self.map[i][j].y, 32, 32)  # Adjust tile size
+                pg.draw.rect(self.screen, (255, 0, 0), rect, 1)  # Red outline for tiles
 
     def update(self):
         self.frame_count += 1
