@@ -30,6 +30,7 @@ class House:
         self.sprite = pg.image.load(init_sprite).convert_alpha()
 
         self.x, self.y = pos
+        self.pos = pos
         self.h, self.w = self.sprite.get_height(), self.sprite.get_width()
         self.coords = coords
 
@@ -46,6 +47,9 @@ class House:
     def draw(self):
         self.game.screen.blit(self.sprite, (self.x, self.y))
     
+    def respawn_player(self):
+        self.game.player.pos = self.pos
+
     def respawn_player(self):
         self.game.player.pos = self.pos
 

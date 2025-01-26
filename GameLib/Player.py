@@ -3,9 +3,10 @@ from collections import deque
 import os
 import pygame as pg
 import sys
+from Sprite.MultiAnimatedSprite import MultiAnimatedSprite
 
 
-class Player:
+class Player(MultiAnimatedSprite):
     def __init__(
         self,
         game,
@@ -48,8 +49,14 @@ class Player:
 
         self.health = health
         self.money = money
-    
-    def draw(self):
+
+        self.attack_anim_trigger = 0
+
+        self.clock = pg.time.Clock()
+        self.attack_in_progress = False
+        self.countdown = 2000
+
+    def draw(self, sprite):
         self.game.screen.blit(self.sprite, (self.x, self.y))
 
     def respawn_player(self):
@@ -73,6 +80,7 @@ class Player:
 
     def get_input(self):
         keys = pg.key.get_pressed()
+        mouse_buttons = pg.mouse.get_pressed()
         curr_time = pg.time.get_ticks()
 
         if (
@@ -127,6 +135,10 @@ class Player:
                     self.game.map[self.coords[0]][self.coords[1]].y,
                 )
             )
+        if mouse_buttons[0]:
+            if self.countdown >= 2000:
+                self.countdown = 0
+                self.attack_anim_trigger = 6  # Trigger the attack animation
 
     def move(self, val):
         self.x, self.y = val
@@ -134,13 +146,18 @@ class Player:
     def dump_animations(self, path, *args):
         for k in args[0]:
             self.anim_paths[k] = deque()
-            full_path = os.path.join(path, k)  # Correctly construct the full path to the folder
+            full_path = os.path.join(
+                path, k
+            )  # Correctly construct the full path to the folder
+            print(full_path, type(full_path))
 
             # Check if the directory exists
             if os.path.exists(full_path):
                 for img in sorted(os.listdir(full_path)):
                     if img.endswith(".png"):  # Make sure to only load PNG files
-                        self.anim_paths[k].append(pg.image.load(os.path.join(full_path, img)))
+                        self.anim_paths[k].append(
+                            pg.image.load(os.path.join(full_path, img))
+                        )
             else:
                 print(
                     f"Warning: '{full_path}' directory not found, skipping animation loading."
@@ -148,6 +165,12 @@ class Player:
 
     def update(self):
         self.get_input()
+
+        if self.attack_in_progress == False:
+            self.check_anim_time()
+
+        dt = self.clock.tick()
+        self.countdown += dt
         self.check_anim_time()
 
         self.dt = self.clock.tick()
@@ -156,16 +179,30 @@ class Player:
         if self.countdown > 50000:
             self.respawn_player()
             self.countdown = 0
-        
-        # Update animation frame if it's time
-        if self.animation_trigger:
+
+        if self.attack_anim_trigger > 0:
+            self.attack_in_progress = True
+            self.attack_anim_trigger -= 1
+            print(self.anim_paths)
+            attack_frame = self.anim_paths["attack"][0]
+            self.anim_paths["attack"].rotate(-1)
+            self.sprite = (
+                attack_frame  # Update the sprite to the attack animation frame
+            )
+
+            if self.attack_anim_trigger == 0:
+                self.attack_in_progress = False
+
+        elif self.animation_trigger:
             self.animation_trigger = False  # Reset trigger
             # Loop through animation frames in the 'walk' group
             walk_frames = self.anim_paths.get("walk", [])
             if walk_frames:
                 # Rotate through the frames for walking
                 current_frame = walk_frames.popleft()
-                walk_frames.append(current_frame)  # Push frame to the back for next time
+                walk_frames.append(
+                    current_frame
+                )  # Push frame to the back for next time
                 self.sprite = current_frame  # Set the current frame as the sprite
-        
-        self.draw()
+
+        self.draw(self.sprite)

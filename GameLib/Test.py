@@ -1,7 +1,7 @@
 # File: GameLib\Test.py
 import pygame as pg
 import sys
-from GameLib.Enemy import Enemy
+from Enemy import Enemy
 
 
 class Test:
