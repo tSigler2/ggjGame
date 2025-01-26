@@ -1,3 +1,4 @@
+# File: GameLib\Game.py
 import pygame as pg
 import sys
 from pygame.locals import *
@@ -51,9 +52,6 @@ class Game:
             grid_start_y + center_y * tile_size,
         )
 
-        # File: GameLib\Game.py
-
-        # Corrected house sprite path (house.png is now in the Assets folder directly)
         house_sprite_path = os.path.join(self.assets_dir, "house.png")
         if not os.path.exists(house_sprite_path):
             print(f"Error: File '{house_sprite_path}' not found.")
@@ -96,7 +94,6 @@ class Game:
             "attack",  # Adjust this to match the correct animation group, if necessary
         )
 
-        # Load the house sprite
         house_sprite_path = os.path.join(self.assets_dir, "house.png")
         if not os.path.exists(house_sprite_path):
             print(f"Error: File '{house_sprite_path}' not found.")
@@ -127,38 +124,37 @@ class Game:
             elif e.type == self.glob_event:
                 self.glob_trigger = True
 
-    # File: GameLib\Game.py (Updated draw_map method)
-
     def draw_map(self):
         for i in range(len(self.map)):
             for j in range(len(self.map[i])):
                 self.map[i][j].draw()
 
                 if self.debug_mode:
-                    # Commented out the red lines for debugging purposes
-                    rect = pg.Rect(
-                        self.map[i][j].x, self.map[i][j].y, 64, 64
-                    )
+                    rect = pg.Rect(self.map[i][j].x, self.map[i][j].y, 64, 64)
                     pg.draw.rect(self.screen, (255, 0, 0), rect, 1)
 
-                    # Draw green dot at the center of each tile
                     center_x = self.map[i][j].x + 64 // 2
                     center_y = self.map[i][j].y + 64 // 2
                     pg.draw.circle(self.screen, (0, 255, 0), (center_x, center_y), 3)
 
-    def run(self):
-        self.init()
-        self.game()
-
-    def handle_input(self):
-        self.player.get_input()  # Let Player.py handle the input
-
     def update(self):
         self.frame_count += 1
         self.player.update()  # Make sure to call update for player, which includes input handling
+
+        # Draw player's speed (assuming player has self.vel_x and self.vel_y for speed)
+        speed_text = f"Speed X: {self.player.vel_x:.2f} Y: {self.player.vel_y:.2f}"
+        speed_surface = self.font.render(speed_text, True, (255, 255, 255))
+        self.screen.blit(
+            speed_surface, (10, 10)
+        )  # Display speed at the top left corner
+
         pg.display.flip()
         self.delta_time = self.clock.tick(self.fps)
         pg.display.set_caption(f"SquirrelyPop")
+
+    # Handle input inside the Game class
+    def handle_input(self):
+        self.player.get_input()  # Let Player.py handle the input
 
     def game(self):
         self.running = True

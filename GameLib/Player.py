@@ -1,3 +1,4 @@
+# File: GameLib\Player.py
 from collections import deque
 import pygame as pg
 import os
@@ -56,6 +57,10 @@ class Player(MultiAnimatedSprite):
         self.attack_anim_trigger = 0
         self.attack_in_progress = False
 
+        # Initialize velocity attributes
+        self.vel_x = 0
+        self.vel_y = 0
+
     def draw(self, sprite=None):
         """Draw the player sprite on the screen."""
         if sprite:
@@ -83,9 +88,6 @@ class Player(MultiAnimatedSprite):
         if self.health <= 0:
             self.respawn_player()
 
-    # File: GameLib\Player.py
-
-
     def get_input(self):
         keys = pg.key.get_pressed()  # Get all the keys currently pressed
         mouse_buttons = pg.mouse.get_pressed()
@@ -94,19 +96,19 @@ class Player(MultiAnimatedSprite):
         # Process movement based on key presses and delta_time for smooth, frame-rate independent movement
         if (keys[pg.K_w] or keys[pg.K_UP]) and (curr_time - self.prev_move_time) >= 100:
             self.prev_move_time = curr_time
-            self.pos[1] -= self.speed * self.game.delta_time  # Apply delta_time for consistent movement
+            self.pos[1] -= self.speed  # Removed delta_time to prevent over-scaling speed
 
         if (keys[pg.K_s] or keys[pg.K_DOWN]) and (curr_time - self.prev_move_time) >= 100:
             self.prev_move_time = curr_time
-            self.pos[1] += self.speed * self.game.delta_time  # Apply delta_time for consistent movement
+            self.pos[1] += self.speed  # Removed delta_time to prevent over-scaling speed
 
         if (keys[pg.K_d] or keys[pg.K_RIGHT]) and (curr_time - self.prev_move_time) >= 100:
             self.prev_move_time = curr_time
-            self.pos[0] += self.speed * self.game.delta_time  # Apply delta_time for consistent movement
+            self.pos[0] += self.speed  # Removed delta_time to prevent over-scaling speed
 
         if (keys[pg.K_a] or keys[pg.K_LEFT]) and (curr_time - self.prev_move_time) >= 100:
             self.prev_move_time = curr_time
-            self.pos[0] -= self.speed * self.game.delta_time  # Apply delta_time for consistent movement
+            self.pos[0] -= self.speed  # Removed delta_time to prevent over-scaling speed
 
         # Handle attack based on mouse button press
         if mouse_buttons[0]:
@@ -115,8 +117,10 @@ class Player(MultiAnimatedSprite):
                 self.attack_anim_trigger = 6  # Trigger the attack animation
 
 
-    def move(self, val):
-        self.pos = list(val)  # Ensure the new position is a list
+    def move(self):
+        # Update player position based on velocity
+        self.pos[0] += self.vel_x * self.game.delta_time
+        self.pos[1] += self.vel_y * self.game.delta_time
         self.x, self.y = self.pos  # Update x and y
 
     def dump_animations(self, path, *args):
@@ -138,6 +142,7 @@ class Player(MultiAnimatedSprite):
 
     def update(self):
         self.get_input()
+        self.move()  # Move the player based on velocity
 
         if self.attack_in_progress == False:
             self.check_anim_time()
@@ -174,5 +179,10 @@ class Player(MultiAnimatedSprite):
                 current_frame = walk_frames.popleft()
                 walk_frames.append(current_frame)
                 self.sprite = current_frame  # Set the current frame as the sprite
+
+        # Display velocity for debugging
+        speed_text = f"Speed X: {self.vel_x:.2f} Y: {self.vel_y:.2f}"
+        text_surface = self.game.font.render(speed_text, True, (255, 255, 255))
+        self.game.screen.blit(text_surface, (10, 10))  # Adjust position as needed
 
         self.draw(self.sprite)
