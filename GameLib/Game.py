@@ -36,11 +36,11 @@ class Game:
     def init(self):
         self.map = Map.get_map(self)
 
-        # Grid offsets for alignment
-        grid_start_x = (self.width - 11 * 50) // 2
-        grid_start_y = (self.height - 11 * 50) // 2
+        # Updated grid offsets for alignment based on tile size of 64
+        tile_size = 64
+        grid_start_x = (self.width - 11 * tile_size) // 2
+        grid_start_y = (self.height - 11 * tile_size) // 2
 
-        tile_size = 50  # Adjusted to grid logic
         center_x, center_y = 5, 5  # Grid center
 
         house_position = (
@@ -59,33 +59,30 @@ class Game:
             coords=[(0, 0)],
         )
 
-        # Get the path to the 'walk' folder
         walk_dir = os.path.join(self.assets_dir, "player", "walk")
-
-        # Get all the image files in the 'walk' directory
-        walk_images = []
-        for filename in os.listdir(walk_dir):
-            if filename.endswith(".png"):
-                walk_images.append(os.path.join(walk_dir, filename))
-
-        # Sort the images to ensure correct animation order
-        walk_images.sort()
+        walk_images = sorted(
+            [
+                os.path.join(walk_dir, f)
+                for f in os.listdir(walk_dir)
+                if f.endswith(".png")
+            ]
+        )
 
         if not walk_images:
             print(f"Error: No images found in '{walk_dir}' for walking animation.")
-            sys.exit(1)  # Exit the program if no images are found
+            sys.exit(1)
 
         self.player = Player(
             self,
             5,
             3,
             walk_images[0],
-            "GameLib/Assets/player",  # Correct path for animation files
+            "GameLib/Assets/player",
             (self.map[0][0].x, self.map[0][0].y),
             120,
             [0, 0],
             0,
-            "walk",  # Adjust this to match the correct animation group, if necessary
+            "walk",
         )
 
     def check_events(self):
@@ -98,13 +95,27 @@ class Game:
             elif e.type == self.glob_event:
                 self.glob_trigger = True
 
+    # File: GameLib\Game.py (Updated draw_map method)
+
     def draw_map(self):
         for i in range(len(self.map)):
             for j in range(len(self.map[i])):
                 self.map[i][j].draw()
-                # Draw grid lines for debugging
-                rect = pg.Rect(self.map[i][j].x, self.map[i][j].y, 32, 32)  # Adjust tile size
-                pg.draw.rect(self.screen, (255, 0, 0), rect, 1)  # Red outline for tiles
+
+                # Commented out the red lines for debugging purposes
+                # rect = pg.Rect(
+                #     self.map[i][j].x, self.map[i][j].y, 64, 64
+                # )
+                # pg.draw.rect(self.screen, (255, 0, 0), rect, 1)
+
+                # Draw green dot at the center of each tile
+                #center_x = self.map[i][j].x + 64 // 2
+                #center_y = self.map[i][j].y + 64 // 2
+                #pg.draw.circle(self.screen, (0, 255, 0), (center_x, center_y), 3)
+
+    def run(self):
+        self.init()
+        self.game()
 
     def update(self):
         self.frame_count += 1
