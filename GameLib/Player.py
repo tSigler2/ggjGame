@@ -47,6 +47,11 @@ class Player:
         self.health = health
         self.money = money
 
+        self.attack_anim_trigger = False
+
+        self.clock = pg.time.Clock()
+        self.countdown = 0
+
     def draw(self):
         self.game.screen.blit(self.sprite, (self.x, self.y))
 
@@ -122,6 +127,10 @@ class Player:
                     self.game.map[self.coords[0]][self.coords[1]].y,
                 )
             )
+        if keys[pg.K_j]:
+            if self.countdown > 2000:
+                self.countdown = 0
+                self.attack_anim_trigger = True  # Trigger the attack animation
 
     def move(self, val):
         self.x, self.y = val
@@ -144,9 +153,21 @@ class Player:
     def update(self):
         self.get_input()
         self.check_anim_time()
+
+        dt = self.clock.tick()
+        self.countdown += dt
         
-        # Update animation frame if it's time
-        if self.animation_trigger:
+        if self.attack_anim_trigger:
+            self.attack_anim_trigger = False
+            attack_frames = self.anim_paths.get("attack", [])
+
+            if attack_frames:
+                current_frame = attack_frames.popleft()
+                attack_frames.append(current_frame)  # Loop back to the first frame after finishing
+                self.sprite = current_frame  # Update the sprite to the attack animation frame
+               
+            
+        elif self.animation_trigger:
             self.animation_trigger = False  # Reset trigger
             # Loop through animation frames in the 'walk' group
             walk_frames = self.anim_paths.get("walk", [])
