@@ -3,7 +3,7 @@ import pygame as pg
 import sys
 from pygame.locals import *
 from GameLib.Player import *
-from GameLib.House import *
+from GameLib.TempHouse import *
 from GameLib.Menu.Button import Button
 from GameLib.Map import *
 from GameLib.Util.Sound import SoundManager
