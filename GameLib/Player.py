@@ -3,9 +3,10 @@ from collections import deque
 import os
 import pygame as pg
 import sys
+from GameLib.Sprite.MultiAnimatedSprite import MultiAnimatedSprite
 
 
-class Player:
+class Player(MultiAnimatedSprite):
     def __init__(
         self,
         game,
@@ -50,7 +51,8 @@ class Player:
         self.attack_anim_trigger = False
 
         self.clock = pg.time.Clock()
-        self.countdown = 0
+        self.attack_in_progress = False
+        self.countdown = 2000
 
     def draw(self):
         self.game.screen.blit(self.sprite, (self.x, self.y))
@@ -73,6 +75,7 @@ class Player:
 
     def get_input(self):
         keys = pg.key.get_pressed()
+        mouse_buttons = pg.mouse.get_pressed()
         curr_time = pg.time.get_ticks()
 
         if (
@@ -127,8 +130,8 @@ class Player:
                     self.game.map[self.coords[0]][self.coords[1]].y,
                 )
             )
-        if keys[pg.K_j]:
-            if self.countdown > 2000:
+        if mouse_buttons[0]:
+            if self.countdown >= 2000:
                 self.countdown = 0
                 self.attack_anim_trigger = True  # Trigger the attack animation
 
@@ -152,19 +155,24 @@ class Player:
 
     def update(self):
         self.get_input()
-        self.check_anim_time()
+
+        if self.attack_in_progress == False: 
+            self.check_anim_time()
 
         dt = self.clock.tick()
         self.countdown += dt
         
         if self.attack_anim_trigger:
             self.attack_anim_trigger = False
+            self.attack_in_progress = True
             attack_frames = self.anim_paths.get("attack", [])
 
             if attack_frames:
                 current_frame = attack_frames.popleft()
                 attack_frames.append(current_frame)  # Loop back to the first frame after finishing
                 self.sprite = current_frame  # Update the sprite to the attack animation frame
+            
+            self.attack_in_progress = False
                
             
         elif self.animation_trigger:
