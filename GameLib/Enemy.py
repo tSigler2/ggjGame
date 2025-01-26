@@ -1,5 +1,8 @@
 from queue import PriorityQueue
+from collections import deque
 from Sprite.MultiAnimatedSprite import MultiAnimatedSprite
+import os
+import pygame as pg
 
 class Enemy(MultiAnimatedSprite):
     def __init__(
@@ -11,30 +14,35 @@ class Enemy(MultiAnimatedSprite):
         map_matrix,
         path,
         animation_time,
+        *args,
         enemy_speed=3,
-        *args
     ):
         self.anim_paths =  {}
         self.dump_animations(path, args)
+        print(self.anim_paths)
         self.animation_time = animation_time
         self.animation_trigger = False
 
         self.game = game
         self.health = health
         self.position = start_position
+        self.x, self.y = (self.game.map[self.position[0]][self.position[1]].x, self.game.map[self.position[0]][self.position[1]].y)
         self.goal = goal
         self.map_matrix = map_matrix
         self.enemy_speed = enemy_speed
         self.path = []
+        self.prev_anim_time = self.game.clock.get_time()
         self.index = 0
         self.curr_deque = self.anim_paths["walk"]
         self.move_counter = 0
         self.find_path()
 
     def dump_animations(self, path, *args):
+        print(args)
         for k in args[0]:
             self.anim_paths[k] = deque()
             full_path = os.path.join(path, k)  # Correctly construct the full path to the folder
+            print(full_path)
 
             # Check if the directory exists
             if os.path.exists(full_path):
@@ -132,6 +140,6 @@ class Enemy(MultiAnimatedSprite):
         if self.animation_trigger:
             self.animate()
 
-            if self.curr_deque = self.anim_paths['attack']:
+            if self.curr_deque == self.anim_paths['attack']:
                 self.game.house.health -= 1
 

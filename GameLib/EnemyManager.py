@@ -1,5 +1,5 @@
 import pygame as pg
-from GameLib.Enemy import Enemy
+from Enemy import Enemy
 import math
 import random as r
 
@@ -27,19 +27,49 @@ class EnemyManager:
         side = r.choice(["top", "bottom", "left", "right"])  # choose a side to spawn
 
         if side == "top" and not self.game.map[0][init_spot].occupied:
-            self.enemy_list.append(Enemy(0, init_spot, self.game.map))
+            self.enemy_list.append(Enemy(self.game, 10, (0, init_spot), (6, 6), self.game.map, "GameLib/Assets/squirrel", 120, "attack", "walk", enemy_speed=3))
         elif side == "bottom" and not self.game.map[10][init_spot].occupied:
-            self.enemy_list.append(Enemy(10, init_spot, self.game.map))
+            self.enemy_list.append(Enemy(self.game, 10, (10, init_spot), (6, 6), self.game.map, "GameLib/Assets/squirrel", 120, "attack", "walk", enemy_speed=3))
         elif side == "left" and not self.game.map[init_spot][0].occupied:
-            self.enemy_list.append(Enemy(self.game, (init_spot, 0), (6, 6), self.game.map, "GameLib/Assets/squirrel", 120, "attack", "walk"))
+            self.enemy_list.append(
+                Enemy(
+                    self.game,
+                    10,
+                    (init_spot, 0),
+                    (6, 6),
+                    self.game.map,
+                    "GameLib/Assets/squirrel",
+                    120,
+                    "attack",
+                    "walk",
+                    enemy_speed=3
+                )
+            )
         elif side == "right" and not self.game.map[init_spot][10].occupied:
-            self.enemy_list.append(Enemy(self.game, (init_spot, 10), (6, 6), self.game.map, "GameLib/Assets/squirrel", 120, "attack", "walk"))
+            self.enemy_list.append(
+                Enemy(
+                    self.game,
+                    10,
+                    (init_spot, 10),
+                    (6, 6),
+                    self.game.map,
+                    "GameLib/Assets/squirrel",
+                    120,
+                    "attack",
+                    "walk",
+                    enemy_speed=3
+                )
+            )
 
     def updateEnemies(self):
         destroy_list = []
         for enemy in range(len(self.enemy_list)):
-            self.enemy_list[enemy].update()  # assuming the Enemy class has an update method
-            if self.enemy_list[enemy].health <= 0:  # check if the enemy should be removed
+            self.enemy_list[
+                enemy
+            ].update()  # assuming the Enemy class has an update method
+            if (
+                self.enemy_list[enemy].health <= 0
+            ):  # check if the enemy should be removed
                 destroy_list.append(enemy)
 
         for enemy in destroy_list:

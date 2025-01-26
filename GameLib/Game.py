@@ -7,6 +7,7 @@ from House import *
 from Menu.Button import Button
 from Map import *
 from Util.Sound import SoundManager
+from EnemyManager import EnemyManager
 import os
 
 
@@ -83,6 +84,8 @@ class Game:
             [5, 5],
             "xxx",
         )
+        
+        self.enemyManager = EnemyManager(self, 900, 5000)
 
         # Initialize the sound manager
         sounds_dir = os.path.join(base_dir, "Assets", "sounds")
@@ -116,6 +119,7 @@ class Game:
             self.draw_map()
             self.player.update()
             self.house.update()
+            self.enemyManager.update()
             self.check_events()
             self.update()
 
