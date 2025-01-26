@@ -29,9 +29,9 @@ class Game:
         self.options_button = Button(350, 400, 150, 50)
         self.frame_count = 0
 
-        # Ensure self.assets_dir is set
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-        self.assets_dir = os.path.join(base_dir, "Assets")
+        # Define base_dir as an instance variable
+        self.base_dir = os.path.dirname(os.path.abspath(__file__))
+        self.assets_dir = os.path.join(os.getcwd(), "GameLib", "Assets")
 
         # Debugging flag
         self.debug_mode = False  # Set this to True to enable debugging
@@ -51,7 +51,14 @@ class Game:
             grid_start_y + center_y * tile_size,
         )
 
-        house_sprite_path = os.path.join(self.assets_dir, "house", "house.png")
+        # File: GameLib\Game.py
+
+        # Corrected house sprite path (house.png is now in the Assets folder directly)
+        house_sprite_path = os.path.join(self.assets_dir, "house.png")
+        if not os.path.exists(house_sprite_path):
+            print(f"Error: File '{house_sprite_path}' not found.")
+            sys.exit(1)  # Exit the program if the file is not found
+
         self.house = House(
             self,
             health=100,
@@ -90,8 +97,7 @@ class Game:
         )
 
         # Load the house sprite
-        assets_dir = os.path.join(base_dir, "Assets")
-        house_sprite_path = os.path.join(assets_dir, "House.png")
+        house_sprite_path = os.path.join(self.assets_dir, "house.png")
         if not os.path.exists(house_sprite_path):
             print(f"Error: File '{house_sprite_path}' not found.")
             sys.exit(1)  # Exit the program if the file is not found
@@ -108,7 +114,7 @@ class Game:
         )
 
         # Initialize the sound manager
-        sounds_dir = os.path.join(base_dir, "Assets", "sounds")
+        sounds_dir = os.path.join(self.base_dir, "Assets", "sounds")
         self.sound_manager = SoundManager(sounds_dir)
 
     def check_events(self):

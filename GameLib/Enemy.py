@@ -132,6 +132,6 @@ class Enemy(MultiAnimatedSprite):
         if self.animation_trigger:
             self.animate()
 
-            if self.curr_deque = self.anim_paths['attack']:
+            if self.curr_deque == self.anim_paths['attack']:
                 self.game.house.health -= 1
 
