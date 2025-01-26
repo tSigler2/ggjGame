@@ -25,7 +25,9 @@ class Game:
         pg.time.set_timer(self.glob_event, 40)
         self._end = False
 
-        self.background = pg.transform.scale(pg.image.load("GameLib/Assets/background.png").convert_alpha(), dims)
+        self.background = pg.transform.scale(
+            pg.image.load("GameLib/Assets/background.png").convert_alpha(), dims
+        )
 
         self.running = False
         self.font = pg.font.SysFont("Consolas", 25)
@@ -40,42 +42,48 @@ class Game:
         # Get the directory where the current script is located
         base_dir = os.path.dirname(os.path.abspath(__file__))
 
-        # Get the path to the 'walk' folder
+        # Initialize music
+        music_file = "Squirrely Pop MainTheme.mp3"
+        music_path = os.path.join(base_dir, "Assets", "music", music_file)
+
+        if not os.path.exists(music_path):
+            print(f"Error: Music file '{music_file}' not found.")
+            sys.exit(1)
+
+        self.music = pg.mixer.Sound(music_path)
+        self.music.play(loops=-1)  # Play the music on a loop
+
+        # Player setup
         walk_dir = os.path.join(base_dir, "Assets", "player", "walk")
-
-        # Get all the image files in the 'walk' directory
-        walk_images = []
-        for filename in os.listdir(walk_dir):
-            if filename.endswith(".png"):
-                walk_images.append(os.path.join(walk_dir, filename))
-
-        # Sort the images to ensure correct animation order
-        walk_images.sort()
+        walk_images = [
+            os.path.join(walk_dir, f)
+            for f in sorted(os.listdir(walk_dir))
+            if f.endswith(".png")
+        ]
 
         if not walk_images:
             print(f"Error: No images found in '{walk_dir}' for walking animation.")
-            sys.exit(1)  # Exit the program if no images are found
+            sys.exit(1)
 
         self.player = Player(
             self,
             5,
             3,
             walk_images[0],
-            "GameLib/Assets/player",  # Correct path for animation files
+            "GameLib/Assets/player",
             (self.map[0][0].x, self.map[0][0].y),
             120,
             [0, 0],
             0,
             "walk",
-            "attack",  # Adjust this to match the correct animation group, if necessary
+            "attack",
         )
 
         # Load the house sprite
-        assets_dir = os.path.join(base_dir, "Assets")
-        house_sprite_path = os.path.join(assets_dir, "House.png")
+        house_sprite_path = os.path.join(base_dir, "Assets", "House.png")
         if not os.path.exists(house_sprite_path):
             print(f"Error: File '{house_sprite_path}' not found.")
-            sys.exit(1)  # Exit the program if the file is not found
+            sys.exit(1)
 
         self.house = House(
             self,
@@ -87,7 +95,7 @@ class Game:
             [5, 5],
             "xxx",
         )
-        
+
         self.enemyManager = EnemyManager(self, 900, 5000)
 
         # Initialize the sound manager
