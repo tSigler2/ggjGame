@@ -1,6 +1,6 @@
 # To run the game, use this command:
 # python -m GameLib.main
-from menu import Menu
+from GameLib.menu import Menu
 
 if __name__ == "__main__":
     # window dimensions and start
