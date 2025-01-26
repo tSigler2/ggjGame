@@ -1,6 +1,6 @@
 from queue import PriorityQueue
 from collections import deque
-from Sprite.MultiAnimatedSprite import MultiAnimatedSprite
+from GameLib.Sprite.MultiAnimatedSprite import MultiAnimatedSprite
 import os
 import pygame as pg
 

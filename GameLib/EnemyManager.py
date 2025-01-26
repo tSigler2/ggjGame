@@ -1,5 +1,5 @@
 import pygame as pg
-from Enemy import Enemy
+from GameLib.Enemy import Enemy
 import math
 import random as r
 

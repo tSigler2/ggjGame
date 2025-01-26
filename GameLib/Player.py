@@ -4,7 +4,7 @@ import os
 import pygame as pg
 import sys
 import math
-from Sprite.MultiAnimatedSprite import MultiAnimatedSprite
+from GameLib.Sprite.MultiAnimatedSprite import MultiAnimatedSprite
 
 
 class Player(MultiAnimatedSprite):

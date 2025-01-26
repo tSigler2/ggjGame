@@ -1,5 +1,5 @@
 import pygame as pg
-from Coral import Coral
+from GameLib.Coral import Coral
 
 class CoralManager:
     def __init__(self, game):

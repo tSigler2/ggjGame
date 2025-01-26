@@ -1,5 +1,5 @@
 # File: GameLib\TempCodeRunnerFile.py
-from Menu import Menu
+from GameLib.Menu import Menu
 
 if __name__ == "__main__":
     # window dimensions and start
