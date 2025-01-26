@@ -1,3 +1,4 @@
+# File: GameLib\Game.py
 import pygame as pg
 import sys
 from pygame.locals import *
@@ -56,13 +57,12 @@ class Game:
             5,
             3,
             walk_images[0],
-            "GameLib/Assets/player",  # Base path for player animations
+            "GameLib/Assets/player",  # Correct path for animation files
             (self.map[0][0].x, self.map[0][0].y),
             120,
             [0, 0],
             0,
-            0,
-            "walk",  # This is the group name, pointing to 'walk' folder
+            "walk",  # Adjust this to match the correct animation group, if necessary
         )
 
         # Load the house sprite
