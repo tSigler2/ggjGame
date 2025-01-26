@@ -33,7 +33,7 @@ class Game:
         self.map = Map.get_map(self)
 
         # Check if the sprite file exists before creating the Player
-        player_sprite_path = "ball.png"
+        player_sprite_path = "D:\ggjGame\GameLib\Assets\player\walk\JimmyWalkcycle1.png"
         if not os.path.exists(player_sprite_path):
             print(f"Error: File '{player_sprite_path}' not found.")
             sys.exit(1)  # Exit the program if the file is not found
@@ -57,7 +57,7 @@ class Game:
         # Build the path to the 'Assets' folder
         assets_dir = os.path.join(base_dir, "Assets")
         # Load the house.png file
-        house_sprite_path = os.path.join(assets_dir, "house.png")
+        house_sprite_path = os.path.join(assets_dir, "House.png")
         if not os.path.exists(house_sprite_path):
             print(f"Error: File '{house_sprite_path}' not found.")
             sys.exit(1)  # Exit the program if the file is not found
