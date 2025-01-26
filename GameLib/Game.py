@@ -71,13 +71,13 @@ class Game:
         )
 
         # Initialize the house object
-        house_sprite_path = "path_to_house_sprite.png"  # Replace with actual path
+        house_sprite_path = os.path.join(self.assets_dir, "house", "house.png")
         self.house = House(
             self,
             health=100,
             init_sprite=house_sprite_path,
             animation_path="path_to_animation",  # Replace with actual path if needed
-            pos=(100, 100),  # Example position
+            pos=(100, 100),  # Example position, update as necessary
             animation_time=200,  # Example time
             coords=[(0, 0)],  # Example coordinates, update as necessary
         )
