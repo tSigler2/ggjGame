@@ -112,13 +112,17 @@ class Player(MultiAnimatedSprite):
         if keys[pg.K_d] or keys[pg.K_RIGHT]:
             self.pos[0] += self.speed  # Move right based on speed
 
+        
         # Prevent the player from going off the screen
-        self.pos[0] = max(
+        self.x = max(
             258, min(961, self.pos[0])
         )  # Constrain left and right between 288 and 991
-        self.pos[1] = max(
+        self.y = max(
             -38, min(651, self.pos[1])
         )  # Constrain top and bottom between 8 and 711
+
+        #Bug-Fix assignment here
+        self.pos = (self.map[0][0].x, self.map[0][0].y)
 
         # Debug print statements for the boundaries
         if self.game.debug_mode:
