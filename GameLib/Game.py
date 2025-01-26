@@ -62,7 +62,8 @@ class Game:
             120,
             [0, 0],
             0,
-            "walk", "attack" # Adjust this to match the correct animation group, if necessary
+            "walk",
+            "attack",  # Adjust this to match the correct animation group, if necessary
         )
 
         # Load the house sprite

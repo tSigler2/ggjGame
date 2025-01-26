@@ -5,7 +5,6 @@ import os
 from Sprite.Sprite import SpriteObj
 
 
-
 class AnimatedSprite(SpriteObj):
     def __init__(self, game, path, pos, scale, shift, animation_time):
         super().__init__(game, path, pos, scale, shift)

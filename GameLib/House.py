@@ -46,7 +46,7 @@ class House:
 
     def draw(self):
         self.game.screen.blit(self.sprite, (self.x, self.y))
-    
+
     def respawn_player(self):
         self.game.player.pos = self.pos
 

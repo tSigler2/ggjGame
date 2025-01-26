@@ -56,7 +56,6 @@ class Player(MultiAnimatedSprite):
         self.attack_in_progress = False
         self.countdown = 2000
 
-    
     def draw(self, sprite):
         self.game.screen.blit(self.sprite, (self.x, self.y))
 
@@ -139,7 +138,7 @@ class Player(MultiAnimatedSprite):
         if mouse_buttons[0]:
             if self.countdown >= 2000:
                 self.countdown = 0
-                self.attack_anim_trigger = 6 # Trigger the attack animation
+                self.attack_anim_trigger = 6  # Trigger the attack animation
 
     def move(self, val):
         self.x, self.y = val
@@ -147,14 +146,18 @@ class Player(MultiAnimatedSprite):
     def dump_animations(self, path, *args):
         for k in args[0]:
             self.anim_paths[k] = deque()
-            full_path = os.path.join(path, k)  # Correctly construct the full path to the folder
+            full_path = os.path.join(
+                path, k
+            )  # Correctly construct the full path to the folder
             print(full_path, type(full_path))
 
             # Check if the directory exists
             if os.path.exists(full_path):
                 for img in sorted(os.listdir(full_path)):
                     if img.endswith(".png"):  # Make sure to only load PNG files
-                        self.anim_paths[k].append(pg.image.load(os.path.join(full_path, img)))
+                        self.anim_paths[k].append(
+                            pg.image.load(os.path.join(full_path, img))
+                        )
             else:
                 print(
                     f"Warning: '{full_path}' directory not found, skipping animation loading."
@@ -163,7 +166,7 @@ class Player(MultiAnimatedSprite):
     def update(self):
         self.get_input()
 
-        if self.attack_in_progress == False: 
+        if self.attack_in_progress == False:
             self.check_anim_time()
 
         dt = self.clock.tick()
@@ -176,18 +179,20 @@ class Player(MultiAnimatedSprite):
         if self.countdown > 50000:
             self.respawn_player()
             self.countdown = 0
-        
+
         if self.attack_anim_trigger > 0:
             self.attack_in_progress = True
             self.attack_anim_trigger -= 1
             print(self.anim_paths)
             attack_frame = self.anim_paths["attack"][0]
             self.anim_paths["attack"].rotate(-1)
-            self.sprite = attack_frame# Update the sprite to the attack animation frame
-            
+            self.sprite = (
+                attack_frame  # Update the sprite to the attack animation frame
+            )
+
             if self.attack_anim_trigger == 0:
-                self.attack_in_progress = False 
-            
+                self.attack_in_progress = False
+
         elif self.animation_trigger:
             self.animation_trigger = False  # Reset trigger
             # Loop through animation frames in the 'walk' group
@@ -195,7 +200,9 @@ class Player(MultiAnimatedSprite):
             if walk_frames:
                 # Rotate through the frames for walking
                 current_frame = walk_frames.popleft()
-                walk_frames.append(current_frame)  # Push frame to the back for next time
+                walk_frames.append(
+                    current_frame
+                )  # Push frame to the back for next time
                 self.sprite = current_frame  # Set the current frame as the sprite
-        
+
         self.draw(self.sprite)
