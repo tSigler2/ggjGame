@@ -31,11 +31,12 @@ class Enemy(MultiAnimatedSprite):
         self.map_matrix = map_matrix
         self.enemy_speed = enemy_speed
         self.path = []
-        self.prev_anim_time = self.game.clock.get_time()
+        self.prev_anim_time = pg.time.get_ticks()
         self.index = 0
         self.curr_deque = self.anim_paths["walk"]
         self.move_counter = 0
         self.find_path()
+        self.rect = pg.Rect(self.x, self.y, 50, 50)
 
     def dump_animations(self, path, *args):
         print(args)
@@ -135,6 +136,7 @@ class Enemy(MultiAnimatedSprite):
         if self.position == (5, 6) or self.position == (7, 6) or self.position == (6, 5) or self.position == (6, 7):
             self.curr_deque = self.anim_paths['attack']
         else:
+            self.curr_deque = self.anim_paths['walk']
             self.move()
 
         if self.animation_trigger:
