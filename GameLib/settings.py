@@ -1,3 +1,4 @@
+# File: GameLib\Settings.py
 import pygame as pg
 import sys
 from GameLib.Menu.Button import Button
