@@ -1,6 +1,6 @@
 import pygame as pg
 import sys
-from GameLib.Menu.Button import Button
+from Menu.Button import Button
 
 
 class EventHandler:
@@ -122,7 +122,7 @@ class SettingsMenu:
         )
 
         # Load and play TownTheme.mp3 in a loop
-        self.music = pg.mixer.Sound("GameLib/TownTheme.mp3")
+        self.music = pg.mixer.Sound("GameLib/Assets/sounds/TownTheme.mp3")
         self.music.set_volume(
             self.settings["Volume"] / 100.0
         )  # Set initial volume (0.0 to 1.0)

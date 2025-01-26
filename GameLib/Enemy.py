@@ -15,7 +15,7 @@ class Enemy(MultiAnimatedSprite):
         enemy_speed=3,
         *args
     ):
-        super().__init__(game, path, start_position, 1, 0, args)
+        super().__init__(game, path, start_position, 1, 0, animation_time, args)
 
         self.game = game
         self.health = health
@@ -35,8 +35,10 @@ class Enemy(MultiAnimatedSprite):
         self.health -= damage
 
         if self.health <= 0:
+            self.game.map[self.position[0]][self.position[1]].occupied = False
+            self.game.map[self.position[0]][self.position[1]].occupant = Null
             self.kill()
-            self.game.player.ge
+            self.game.player.get_money(1)
 
     def astar(self):
         open_set = PriorityQueue()

@@ -14,7 +14,7 @@ class House:
         pos,
         animation_time,
         coords,
-        *args
+        *args,
     ):
         self.game = game
         self.health = health
@@ -22,7 +22,7 @@ class House:
         self.clock = pg.time.Clock()
         self.countdown = 0
 
-         # Check if the sprite file exists before loading it
+        # Check if the sprite file exists before loading it
         if not os.path.exists(init_sprite):
             print(f"Error: File '{init_sprite}' not found.")
             sys.exit(1)  # Exit the program if the file is not found
@@ -48,7 +48,7 @@ class House:
         self.game.screen.blit(self.sprite, (self.x, self.y))
 
     def give_money(self):
-        self.money_value = self.game.player.get_money()
+        self.money_value = self.game.player.get_money(1)
         print("Money Value: " + str(self.money_value))
 
     def update(self):
@@ -59,5 +59,7 @@ class House:
 
         if self.countdown > 10000:
             self.give_money()
-            self.countdown = 0 # reset it to 0 so you can count again
-        
+            self.countdown = 0  # reset it to 0 so you can count again
+
+        if self.health == 0:
+            self.game._end = True
