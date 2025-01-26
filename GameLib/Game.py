@@ -33,6 +33,9 @@ class Game:
         base_dir = os.path.dirname(os.path.abspath(__file__))
         self.assets_dir = os.path.join(base_dir, "Assets")
 
+        # Debugging flag
+        self.debug_mode = False  # Set this to True to enable debugging
+
     def init(self):
         self.map = Map.get_map(self)
 
@@ -102,16 +105,17 @@ class Game:
             for j in range(len(self.map[i])):
                 self.map[i][j].draw()
 
-                # Commented out the red lines for debugging purposes
-                # rect = pg.Rect(
-                #     self.map[i][j].x, self.map[i][j].y, 64, 64
-                # )
-                # pg.draw.rect(self.screen, (255, 0, 0), rect, 1)
+                if self.debug_mode:
+                    # Commented out the red lines for debugging purposes
+                    rect = pg.Rect(
+                        self.map[i][j].x, self.map[i][j].y, 64, 64
+                    )
+                    pg.draw.rect(self.screen, (255, 0, 0), rect, 1)
 
-                # Draw green dot at the center of each tile
-                #center_x = self.map[i][j].x + 64 // 2
-                #center_y = self.map[i][j].y + 64 // 2
-                #pg.draw.circle(self.screen, (0, 255, 0), (center_x, center_y), 3)
+                    # Draw green dot at the center of each tile
+                    center_x = self.map[i][j].x + 64 // 2
+                    center_y = self.map[i][j].y + 64 // 2
+                    pg.draw.circle(self.screen, (0, 255, 0), (center_x, center_y), 3)
 
     def run(self):
         self.init()
