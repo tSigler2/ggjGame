@@ -108,8 +108,13 @@ class Player(MultiAnimatedSprite):
             self.pos[0] += self.speed  # Move right based on speed
 
         # Prevent the player from going off the screen
-        self.pos[0] = max(self.radius, min(self.game.width - self.radius, self.pos[0]))  # Constrain left and right
-        self.pos[1] = max(self.radius, min(self.game.height - self.radius, self.pos[1]))  # Constrain top and bottom
+        self.pos[0] = max(258, min(961, self.pos[0]))  # Constrain left and right between 288 and 991
+        self.pos[1] = max(-38, min(651, self.pos[1]))  # Constrain top and bottom between 8 and 711
+
+        # Debug print statements for the boundaries
+        if self.game.debug_mode:
+            print(f"Left boundary: {self.radius}, Right boundary: {self.game.width - self.radius}")
+            print(f"Up boundary: {self.radius}, Down boundary: {self.game.height - self.radius}")
 
         # Update the player position based on the new values
         self.x, self.y = self.pos  # Update x, y position values
@@ -128,6 +133,7 @@ class Player(MultiAnimatedSprite):
                     <= 2
                 ):
                     enemy.update_health(-1)
+
 
 
     def move(self):
