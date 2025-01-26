@@ -70,6 +70,18 @@ class Game:
             "walk",  # Adjust this to match the correct animation group, if necessary
         )
 
+        # Initialize the house object
+        house_sprite_path = "path_to_house_sprite.png"  # Replace with actual path
+        self.house = House(
+            self,
+            health=100,
+            init_sprite=house_sprite_path,
+            animation_path="path_to_animation",  # Replace with actual path if needed
+            pos=(100, 100),  # Example position
+            animation_time=200,  # Example time
+            coords=[(0, 0)],  # Example coordinates, update as necessary
+        )
+
     def check_events(self):
         self.glob_trigger = False
         self.click = False

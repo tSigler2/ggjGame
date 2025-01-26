@@ -1,4 +1,3 @@
-# File: GameLib\Player.py
 from collections import deque
 import pygame as pg
 import os
@@ -14,7 +13,6 @@ class Player:
         init_sprite,
         animation_path,
         pos,
-        position,
         animation_time,
         coords,
         money,
@@ -31,10 +29,11 @@ class Player:
             sys.exit(1)
         self.sprite = pg.image.load(init_sprite).convert_alpha()
 
-        self.x, self.y = pos
+        # Ensure pos is a list, not a tuple, to allow mutation
+        self.pos = list(pos)  # Changed from tuple to list
+        self.x, self.y = self.pos  # Unpack from the list
         self.h, self.w = self.sprite.get_height(), self.sprite.get_width()
         self.coords = coords
-        self.pos = list(position)
 
         self.speed = 5  # Adjusted movement speed
         self.prev_move_time = self.game.clock.get_time()
@@ -47,7 +46,7 @@ class Player:
 
         self.dump_animations(animation_path, args)
 
-        self.radius = 20  # set the player's radius here
+        self.radius = 20  # Set the player's radius here
 
         self.health = health
         self.money = money
@@ -57,6 +56,7 @@ class Player:
 
     def respawn_player(self):
         self.x, self.y = self.game.house.pos
+        self.pos = [self.x, self.y]  # Update pos list when respawning
 
     def get_money(self, val):
         self.money += val
@@ -82,25 +82,32 @@ class Player:
             curr_time - self.prev_move_time
         ) >= 100:
             self.prev_move_time = curr_time
-            self.y -= self.speed
+            self.pos[1] -= self.speed  # Update y in pos list
+
         if (keys[pg.K_s] or keys[pg.K_DOWN]) and (  # Move down
             curr_time - self.prev_move_time
         ) >= 100:
             self.prev_move_time = curr_time
-            self.y += self.speed
+            self.pos[1] += self.speed  # Update y in pos list
+
         if (keys[pg.K_d] or keys[pg.K_RIGHT]) and (  # Move right
             curr_time - self.prev_move_time
         ) >= 100:
             self.prev_move_time = curr_time
-            self.x += self.speed
+            self.pos[0] += self.speed  # Update x in pos list
+
         if (keys[pg.K_a] or keys[pg.K_LEFT]) and (  # Move left
             curr_time - self.prev_move_time
         ) >= 100:
             self.prev_move_time = curr_time
-            self.x -= self.speed
+            self.pos[0] -= self.speed  # Update x in pos list
+
+        # Recalculate x and y from pos
+        self.x, self.y = self.pos
 
     def move(self, val):
-        self.x, self.y = val
+        self.pos = list(val)  # Ensure the new position is a list
+        self.x, self.y = self.pos  # Update x and y
 
     def dump_animations(self, path, *args):
         for k in args[0]:
