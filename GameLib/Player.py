@@ -142,7 +142,12 @@ class Player(MultiAnimatedSprite):
                 self.countdown = 0
                 self.attack_anim_trigger = 6  # Trigger the attack animation
             for enemy in self.game.enemyManager.enemy_list:
-                if enemy.rect.collidepoint(mouse_pos) and abs(self.coords[0] - enemy.position[0]) +  abs(self.coords[1] - enemy.position[1]) <= 2:
+                if (
+                    enemy.rect.collidepoint(mouse_pos)
+                    and abs(self.coords[0] - enemy.position[0])
+                    + abs(self.coords[1] - enemy.position[1])
+                    <= 2
+                ):
                     enemy.update_health(-1)
 
     def move(self, val):
