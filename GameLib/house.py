@@ -26,7 +26,6 @@ class House:
         if not os.path.exists(init_sprite):
             print(f"Error: File '{init_sprite}' not found.")
             sys.exit(1)  # Exit the program if the file is not found
-        self.sprite = pg.image.load(init_sprite).convert_alpha()
 
         self.sprite = pg.image.load(init_sprite).convert_alpha()
 
