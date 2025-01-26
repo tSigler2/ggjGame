@@ -144,4 +144,16 @@ class Player:
     def update(self):
         self.get_input()
         self.check_anim_time()
+        
+        # Update animation frame if it's time
+        if self.animation_trigger:
+            self.animation_trigger = False  # Reset trigger
+            # Loop through animation frames in the 'walk' group
+            walk_frames = self.anim_paths.get("walk", [])
+            if walk_frames:
+                # Rotate through the frames for walking
+                current_frame = walk_frames.popleft()
+                walk_frames.append(current_frame)  # Push frame to the back for next time
+                self.sprite = current_frame  # Set the current frame as the sprite
+        
         self.draw()
