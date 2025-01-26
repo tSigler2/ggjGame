@@ -93,22 +93,25 @@ class Player(MultiAnimatedSprite):
         mouse_buttons = pg.mouse.get_pressed()
         curr_time = pg.time.get_ticks()
 
-        # Process movement based on key presses and delta_time for smooth, frame-rate independent movement
-        if (keys[pg.K_w] or keys[pg.K_UP]) and (curr_time - self.prev_move_time) >= 100:
-            self.prev_move_time = curr_time
-            self.pos[1] -= self.speed  # Removed delta_time to prevent over-scaling speed
+        # Move up
+        if keys[pg.K_w] or keys[pg.K_UP]:
+            self.pos[1] -= self.speed  # Move up based on speed
+        # Move down
+        if keys[pg.K_s] or keys[pg.K_DOWN]:
+            self.pos[1] += self.speed  # Move down based on speed
+        # Move left
+        if keys[pg.K_a] or keys[pg.K_LEFT]:
+            self.pos[0] -= self.speed  # Move left based on speed
+        # Move right
+        if keys[pg.K_d] or keys[pg.K_RIGHT]:
+            self.pos[0] += self.speed  # Move right based on speed
 
-        if (keys[pg.K_s] or keys[pg.K_DOWN]) and (curr_time - self.prev_move_time) >= 100:
-            self.prev_move_time = curr_time
-            self.pos[1] += self.speed  # Removed delta_time to prevent over-scaling speed
+        # Prevent the player from going off the screen
+        self.pos[0] = max(self.radius, min(self.game.width - self.radius, self.pos[0]))  # Constrain left and right
+        self.pos[1] = max(self.radius, min(self.game.height - self.radius, self.pos[1]))  # Constrain top and bottom
 
-        if (keys[pg.K_d] or keys[pg.K_RIGHT]) and (curr_time - self.prev_move_time) >= 100:
-            self.prev_move_time = curr_time
-            self.pos[0] += self.speed  # Removed delta_time to prevent over-scaling speed
-
-        if (keys[pg.K_a] or keys[pg.K_LEFT]) and (curr_time - self.prev_move_time) >= 100:
-            self.prev_move_time = curr_time
-            self.pos[0] -= self.speed  # Removed delta_time to prevent over-scaling speed
+        # Update the player position based on the new values
+        self.x, self.y = self.pos  # Update x, y position values
 
         # Handle attack based on mouse button press
         if mouse_buttons[0]:
