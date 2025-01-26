@@ -22,6 +22,8 @@ class Player:
         self.game = game
         self.health = health
         self.range = range
+        self.clock = pg.time.Clock()
+        self.countdown = 0
 
         # Check if the sprite file exists before loading it
         if not os.path.exists(init_sprite):
@@ -46,9 +48,12 @@ class Player:
 
         self.health = health
         self.money = money
-
+    
     def draw(self):
         self.game.screen.blit(self.sprite, (self.x, self.y))
+
+    def respawn_player(self):
+        self.pos = self.game.house.pos
 
     def get_money(self, val):
         self.money += val
@@ -64,7 +69,7 @@ class Player:
         self.health -= damage
 
         if self.health <= 0:
-            self.kill()
+            self.respawn_player
 
     def get_input(self):
         keys = pg.key.get_pressed()
@@ -144,6 +149,13 @@ class Player:
     def update(self):
         self.get_input()
         self.check_anim_time()
+
+        self.dt = self.clock.tick()
+        self.countdown += self.dt
+
+        if self.countdown > 50000:
+            self.respawn_player()
+            self.countdown = 0
         
         # Update animation frame if it's time
         if self.animation_trigger:

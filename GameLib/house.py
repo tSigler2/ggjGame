@@ -46,6 +46,9 @@ class House:
 
     def draw(self):
         self.game.screen.blit(self.sprite, (self.x, self.y))
+    
+    def respawn_player(self):
+        self.game.player.pos = self.pos
 
     def give_money(self):
         self.money_value = self.game.player.get_money(1)
@@ -62,4 +65,4 @@ class House:
             self.countdown = 0  # reset it to 0 so you can count again
 
         if self.health == 0:
-            self.game._end = True
+            self.respawn_player
