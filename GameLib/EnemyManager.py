@@ -31,15 +31,21 @@ class EnemyManager:
         elif side == "bottom" and not self.game.map[10][init_spot].occupied:
             self.enemy_list.append(Enemy(10, init_spot, self.game.map))
         elif side == "left" and not self.game.map[init_spot][0].occupied:
-            self.enemy_list.append(Enemy(init_spot, 0, self.game.map))
+            self.enemy_list.append(Enemy(self.game, (init_spot, 0), (6, 6), self.game.map, "GameLib/Assets/squirrel", 120, "attack", "walk"))
         elif side == "right" and not self.game.map[init_spot][10].occupied:
-            self.enemy_list.append(Enemy(init_spot, 10, self.game.map))
+            self.enemy_list.append(Enemy(self.game, (init_spot, 10), (6, 6), self.game.map, "GameLib/Assets/squirrel", 120, "attack", "walk"))
 
     def updateEnemies(self):
-        for enemy in self.enemy_list:
-            enemy.update()  # assuming the Enemy class has an update method
-            if enemy.is_destroyed():  # check if the enemy should be removed
-                self.enemy_list.remove(enemy)
+        destroy_list = []
+        for enemy in range(len(self.enemy_list)):
+            self.enemy_list[enemy].update()  # assuming the Enemy class has an update method
+            if self.enemy_list[enemy].health <= 0:  # check if the enemy should be removed
+                destroy_list.append(enemy)
+
+        for enemy in destroy_list:
+            self.game.map[enemy.position[0]][enemy.position[1]].occupied = False
+            self.game.map[enemy.position[0]][enemy.position[1]].occupant = None
+            self.enemy_list.pop(enemy)
 
     def update(self):
         self.frame_count += 1
