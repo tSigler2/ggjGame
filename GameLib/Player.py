@@ -34,6 +34,7 @@ class Player(MultiAnimatedSprite):
 
         # Ensure pos is a list, not a tuple, to allow mutation
         self.pos = list(pos)  # Changed from tuple to list
+        print(f"Type of self.pos before move: {type(self.pos)}")
         self.x, self.y = self.pos  # Unpack from the list
         self.h, self.w = self.sprite.get_height(), self.sprite.get_width()
         self.coords = coords
@@ -94,6 +95,10 @@ class Player(MultiAnimatedSprite):
         mouse_buttons = pg.mouse.get_pressed()
         curr_time = pg.time.get_ticks()
 
+        print(f"Pos initialized as: {self.pos}")
+
+        # self.pos = list(pos)  # Changed from tuple to list
+
         # Move up
         if keys[pg.K_w] or keys[pg.K_UP]:
             self.pos[1] -= self.speed  # Move up based on speed
@@ -108,13 +113,21 @@ class Player(MultiAnimatedSprite):
             self.pos[0] += self.speed  # Move right based on speed
 
         # Prevent the player from going off the screen
-        self.pos[0] = max(258, min(961, self.pos[0]))  # Constrain left and right between 288 and 991
-        self.pos[1] = max(-38, min(651, self.pos[1]))  # Constrain top and bottom between 8 and 711
+        self.pos[0] = max(
+            258, min(961, self.pos[0])
+        )  # Constrain left and right between 288 and 991
+        self.pos[1] = max(
+            -38, min(651, self.pos[1])
+        )  # Constrain top and bottom between 8 and 711
 
         # Debug print statements for the boundaries
         if self.game.debug_mode:
-            print(f"Left boundary: {self.radius}, Right boundary: {self.game.width - self.radius}")
-            print(f"Up boundary: {self.radius}, Down boundary: {self.game.height - self.radius}")
+            print(
+                f"Left boundary: {self.radius}, Right boundary: {self.game.width - self.radius}"
+            )
+            print(
+                f"Up boundary: {self.radius}, Down boundary: {self.game.height - self.radius}"
+            )
 
         # Update the player position based on the new values
         self.x, self.y = self.pos  # Update x, y position values
@@ -133,8 +146,6 @@ class Player(MultiAnimatedSprite):
                     <= 2
                 ):
                     enemy.update_health(-1)
-
-
 
     def move(self):
         # Update player position based on velocity
@@ -203,5 +214,5 @@ class Player(MultiAnimatedSprite):
         speed_text = f"Speed X: {self.vel_x:.2f} Y: {self.vel_y:.2f}"
         text_surface = self.game.font.render(speed_text, True, (255, 255, 255))
         self.game.screen.blit(text_surface, (10, 10))  # Adjust position as needed
-        
+
         self.draw(self.sprite)

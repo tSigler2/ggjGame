@@ -110,8 +110,16 @@ class Game:
             [5, 5],
             "xxx",
         )
-        
-        self.enemyManager = EnemyManager(self, 900, 5000)
+
+        try:
+            # self.enemyManager = EnemyManager(self, 900, 5000)
+            
+            # Temporarily spawn  more enemies
+            # Enemy spawn logic
+            self.enemyManager = EnemyManager(self, 300, 5000)
+        except Exception as e:
+            print(f"Error during enemy spawn: {e}")
+            sys.exit(1)
 
         # Initialize the sound manager
         sounds_dir = os.path.join(self.base_dir, "Assets", "sounds")

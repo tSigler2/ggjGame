@@ -31,6 +31,7 @@ class Enemy(MultiAnimatedSprite):
             self.game.map[self.position[0]][self.position[1]].x,
             self.game.map[self.position[0]][self.position[1]].y,
         )
+
         self.goal = goal
         self.map_matrix = map_matrix
         self.enemy_speed = enemy_speed
