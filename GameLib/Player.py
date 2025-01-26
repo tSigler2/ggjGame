@@ -129,14 +129,17 @@ class Player:
     def dump_animations(self, path, *args):
         for k in args[0]:
             self.anim_paths[k] = deque()
+            full_path = os.path.join(path, k)  # Correctly construct the full path to the folder
+
             # Check if the directory exists
-        if os.path.exists(path + "/" + k):
-            for img in sorted(os.listdir(path + "/" + k)):
-                self.anim_paths[k].append(pg.image.load(path + "/" + k + "/" + img))
-        else:
-            print(
-                f"Warning: '{path + '/' + k}' directory not found, skipping animation loading."
-            )
+            if os.path.exists(full_path):
+                for img in sorted(os.listdir(full_path)):
+                    if img.endswith(".png"):  # Make sure to only load PNG files
+                        self.anim_paths[k].append(pg.image.load(os.path.join(full_path, img)))
+            else:
+                print(
+                    f"Warning: '{full_path}' directory not found, skipping animation loading."
+                )
 
     def update(self):
         self.get_input()

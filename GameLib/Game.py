@@ -56,13 +56,13 @@ class Game:
             5,
             3,
             walk_images[0],
-            "GameLib/Assets/player",  # Correct path for animation files
+            "GameLib/Assets/player",  # Base path for player animations
             (self.map[0][0].x, self.map[0][0].y),
             120,
             [0, 0],
             0,
             0,
-            "walk",  # Adjust this to match the correct animation group, if necessary
+            "walk",  # This is the group name, pointing to 'walk' folder
         )
 
         # Load the house sprite
