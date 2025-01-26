@@ -1,6 +1,6 @@
 import os
 import pygame as pg
-from GameLib.MapSlot import Space
+from MapSlot import Space
 
 
 class Map:

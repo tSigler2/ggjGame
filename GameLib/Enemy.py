@@ -1,6 +1,5 @@
 from queue import PriorityQueue
-from GameLib.Sprite.MultiAnimatedSprite import MultiAnimatedSprite
-
+from Sprite.MultiAnimatedSprite import MultiAnimatedSprite
 
 class Enemy(MultiAnimatedSprite):
     def __init__(
@@ -15,7 +14,10 @@ class Enemy(MultiAnimatedSprite):
         enemy_speed=3,
         *args
     ):
-        super().__init__(game, path, start_position, 1, 0, animation_time, args)
+        self.anim_paths =  {}
+        self.dump_animations(path, args)
+        self.animation_time = animation_time
+        self.animation_trigger = False
 
         self.game = game
         self.health = health
@@ -25,8 +27,24 @@ class Enemy(MultiAnimatedSprite):
         self.enemy_speed = enemy_speed
         self.path = []
         self.index = 0
+        self.curr_deque = self.anim_paths["walk"]
         self.move_counter = 0
         self.find_path()
+
+    def dump_animations(self, path, *args):
+        for k in args[0]:
+            self.anim_paths[k] = deque()
+            full_path = os.path.join(path, k)  # Correctly construct the full path to the folder
+
+            # Check if the directory exists
+            if os.path.exists(full_path):
+                for img in sorted(os.listdir(full_path)):
+                    if img.endswith(".png"):  # Make sure to only load PNG files
+                        self.anim_paths[k].append(pg.image.load(os.path.join(full_path, img)))
+            else:
+                print(
+                    f"Warning: '{full_path}' directory not found, skipping animation loading."
+                )
 
     def heuristic(self, a, b):
         return abs(a[0] - b[0]) + abs(a[1] - b[1])
@@ -89,5 +107,31 @@ class Enemy(MultiAnimatedSprite):
     def find_path(self):
         self.astar()
 
+    def check_anim_time(self):
+        curr_time = pg.time.get_ticks()
+        if curr_time - self.animation_time > self.prev_anim_time:
+            self.prev_anim_time = curr_time
+            self.animation_trigger = True
+
+    def animate(self):
+        curr_sprite = self.curr_deque[0]
+        self.curr_deque.rotate(-1)
+        self.game.screen.blit(curr_sprite, (self.x, self.y))
+
+    def update_health(self, val):
+        self.health -= val
+
     def update(self):
-        self.move()
+        self.check_anim_time()
+        
+        if self.position == (5, 6) or self.position == (7, 6) or self.position == (6, 5) or self.position == (6, 7):
+            self.curr_deque = self.anim_paths['attack']
+        else:
+            self.move()
+
+        if self.animation_trigger:
+            self.animate()
+
+            if self.curr_deque = self.anim_paths['attack']:
+                self.game.house.health -= 1
+

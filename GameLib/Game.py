@@ -1,11 +1,11 @@
 import pygame as pg
 import sys
 from pygame.locals import *
-from GameLib.Player import *
-from GameLib.House import *
-from GameLib.Menu.Button import Button
-from GameLib.Map import *
-from GameLib.Util.Sound import SoundManager
+from Player import *
+from House import *
+from Menu.Button import Button
+from Map import *
+from Util.Sound import SoundManager
 import os
 
 
@@ -86,7 +86,30 @@ class Game:
             [0, 0],
             0,
             "walk",
+            "attack",  # Adjust this to match the correct animation group, if necessary
         )
+
+        # Load the house sprite
+        assets_dir = os.path.join(base_dir, "Assets")
+        house_sprite_path = os.path.join(assets_dir, "House.png")
+        if not os.path.exists(house_sprite_path):
+            print(f"Error: File '{house_sprite_path}' not found.")
+            sys.exit(1)  # Exit the program if the file is not found
+
+        self.house = House(
+            self,
+            5,
+            house_sprite_path,
+            "Assets",
+            (self.map[5][5].x, self.map[5][5].y),
+            120,
+            [5, 5],
+            "xxx",
+        )
+
+        # Initialize the sound manager
+        sounds_dir = os.path.join(base_dir, "Assets", "sounds")
+        self.sound_manager = SoundManager(sounds_dir)
 
     def check_events(self):
         self.glob_trigger = False
