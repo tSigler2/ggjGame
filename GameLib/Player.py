@@ -37,7 +37,7 @@ class Player(MultiAnimatedSprite):
         self.h, self.w = self.sprite.get_height(), self.sprite.get_width()
         self.coords = coords
 
-        self.speed = 5  # Adjusted movement speed
+        self.speed = 3  # Adjusted movement speed
         self.prev_move_time = self.game.clock.get_time()
 
         self.animation_trigger = False
