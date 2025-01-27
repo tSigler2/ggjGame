@@ -36,7 +36,9 @@ class Enemy(MultiAnimatedSprite):
             *animation_sets: Animation sets (e.g., "walk", "attack").
             enemy_speed: The enemy's movement speed (default: 3).
         """
-        super().__init__(game, path, start_position, 1, 0, animation_time, animation_sets)
+        super().__init__(
+            game, path, start_position, 1, 0, animation_time, animation_sets
+        )
         self.health = health
         self.position = start_position  # Grid coordinates (x, y)
         self.goal = goal  # Target grid coordinates (x, y)
@@ -53,7 +55,10 @@ class Enemy(MultiAnimatedSprite):
         self.animation_trigger = False
 
         # Set initial position
-        self.x, self.y = self.game.map[start_position[0]][start_position[1]].x, self.game.map[start_position[0]][start_position[1]].y
+        self.x, self.y = (
+            self.game.map[start_position[0]][start_position[1]].x,
+            self.game.map[start_position[0]][start_position[1]].y,
+        )
 
         # Find initial path
         self.find_path()
@@ -130,7 +135,9 @@ class Enemy(MultiAnimatedSprite):
                     if neighbor not in g_score or tentative_g_score < g_score[neighbor]:
                         came_from[neighbor] = current
                         g_score[neighbor] = tentative_g_score
-                        f_score[neighbor] = tentative_g_score + self.heuristic(neighbor, self.goal)
+                        f_score[neighbor] = tentative_g_score + self.heuristic(
+                            neighbor, self.goal
+                        )
                         open_set.append((f_score[neighbor], neighbor))
                         open_set.sort(key=lambda x: x[0])
 
@@ -143,7 +150,10 @@ class Enemy(MultiAnimatedSprite):
             self.move_counter = 0
             next_position = self.path.pop(0)
             self.position = next_position
-            self.x, self.y = self.game.map[next_position[0]][next_position[1]].x, self.game.map[next_position[0]][next_position[1]].y
+            self.x, self.y = (
+                self.game.map[next_position[0]][next_position[1]].x,
+                self.game.map[next_position[0]][next_position[1]].y,
+            )
 
     def attack(self):
         """
