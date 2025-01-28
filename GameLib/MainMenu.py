@@ -9,7 +9,7 @@ class MainMenu:
     The MainMenu class handles the main menu of the game, including buttons and navigation.
     """
 
-    def __init__(self, game, screen_width: int, screen_height: int):
+    def __init__(self, game, screen_width: int, screen_height: int, clock):
         """
         Initialize the main menu.
 
@@ -21,6 +21,7 @@ class MainMenu:
         self.game = game
         self.screen_width = screen_width
         self.screen_height = screen_height
+        self.clock = clock  # Use the clock passed from Game
         self.font = pg.font.SysFont("Consolas", 40)
         self.buttons = self.create_buttons()
 
@@ -73,16 +74,21 @@ class MainMenu:
         """
         Start the game by launching Game.py.
         """
-        game_path = os.path.join(os.path.dirname(__file__), 'Game.py')
-        subprocess.Popen(['python', game_path])  # Ensure the correct path is passed
+        game_path = os.path.join(os.path.dirname(__file__), "Game.py")
+        subprocess.Popen(["python", game_path])  # Launch the games script
         self.game.running = False  # Stop the main menu
 
     def open_settings(self):
         """
-        Open the settings menu.
+        Open the settings menu by launching Settings.py.
         """
-        settings_menu = SettingsMenu(self.game, self.screen_width, self.screen_height)
-        settings_menu.run()
+        settings_menu = SettingsMenu(
+            self.game.screen, self.game.clock, self.game.settings
+        )
+        settings_menu.run()  # Run the settings menu in the same loop
+        self.game.running = (
+            True  # the main menu continues after returning from settings
+        )
 
     def quit_game(self):
         """
