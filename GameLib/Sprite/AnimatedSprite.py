@@ -1,39 +1,63 @@
 import pygame as pg
 from collections import deque
 import os
+from Sprite import Sprite
 
-from Sprite.Sprite import SpriteObj
 
+class AnimatedSprite(Sprite):
+    """
+    The AnimatedSprite class handles a single animation sequence.
+    """
 
-class AnimatedSprite(SpriteObj):
-    def __init__(self, game, path, pos, scale, shift, animation_time):
-        super().__init__(game, path, pos, scale, shift)
+    def __init__(self, game, path: str, pos: tuple, scale: float, animation_time: int):
+        """
+        Initialize the animated sprite.
+
+        Args:
+            game: The main game object.
+            path: Path to the folder containing animation frames.
+            pos: Initial position (x, y) of the sprite.
+            scale: Scale factor for the sprite.
+            animation_time: Time between animation frames (in milliseconds).
+        """
+        super().__init__(game, os.path.join(path, "frame0.png"), pos, scale)
         self.animation_time = animation_time
-        self.images = self.get_images(path)
-        self.animation_time_prev = pg.time.get_ticks()
-        self.animation_trigger = False
+        self.animation_frames = self.load_animation_frames(path)
+        self.current_frame = 0
+        self.last_frame_time = pg.time.get_ticks()
 
-    def update(self):
-        self.check_anim_time()
-        self.animate()
-        super().update()
+    def load_animation_frames(self, path: str) -> deque:
+        """
+        Load animation frames from the specified folder.
 
-    def get_images(self, path):
-        images = deque()
+        Args:
+            path: Path to the folder containing animation frames.
+
+        Returns:
+            A deque of animation frames.
+        """
+        frames = deque()
         for file in sorted(os.listdir(path)):
             if file.endswith((".png", ".jpg")):
                 img = pg.image.load(os.path.join(path, file)).convert_alpha()
-                images.append(img)
-        return images
+                img = pg.transform.scale(
+                    img,
+                    (
+                        int(img.get_width() * self.scale),
+                        int(img.get_height() * self.scale),
+                    ),
+                )
+                frames.append(img)
+        return frames
 
-    def check_anim_time(self):
+    def update(self):
+        """
+        Update the animation and draw the sprite.
+        """
         current_time = pg.time.get_ticks()
-        if current_time - self.animation_time_prev > self.animation_time:
-            self.animation_time_prev = current_time
-            self.animation_trigger = True
+        if current_time - self.last_frame_time >= self.animation_time:
+            self.last_frame_time = current_time
+            self.current_frame = (self.current_frame + 1) % len(self.animation_frames)
+            self.image = self.animation_frames[self.current_frame]
 
-    def animate(self):
-        if self.animation_trigger:
-            self.images.rotate(-1)
-            # images is not a local or global variable, so I thought it should be self.images
-            self.image = self.images[0]
+        super().draw()
