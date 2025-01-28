@@ -1,165 +1,198 @@
-# File: GameLib\Game.py
-import pygame as pg
+# Re-work this later
+import pygame
 import sys
 from pygame.locals import *
-from Player import *
-from House import *
-from Menu.Button import Button
-from Map import *
-from Util.Sound import SoundManager
-from EnemyManager import EnemyManager
-from CoralManager import CoralManager
-import os
+import random
+
+# Initialize Pygame
+pygame.init()
+
+# Constants
+GRID_SIZE = 11
+CELL_SIZE = 50
+SCREEN_WIDTH = GRID_SIZE * CELL_SIZE
+SCREEN_HEIGHT = SCREEN_WIDTH + 100  # Extra space for the menu
+FPS = 60
+
+# Colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+GRAY = (169, 169, 169)
+BLUE = (0, 0, 255)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
 
 
+# Game objects
+class GameObject:
+    def __init__(self, x, y, color, health):
+        self.x = x
+        self.y = y
+        self.color = color
+        self.health = health
+
+    def draw(self, screen):
+        pygame.draw.rect(
+            screen,
+            self.color,
+            (self.x * CELL_SIZE, self.y * CELL_SIZE, CELL_SIZE, CELL_SIZE),
+        )
+
+
+class GoblinShark(GameObject):
+    def __init__(self, x, y):
+        super().__init__(x, y, BLUE, 5)
+        self.energy = 5
+        self.cooldown = 0  # Cooldown for planting/moving corals
+
+    def move(self, dx, dy):
+        new_x = self.x + dx
+        new_y = self.y + dy
+        if 0 <= new_x < GRID_SIZE and 0 <= new_y < GRID_SIZE:
+            self.x = new_x
+            self.y = new_y
+
+    def attack(self, squirrels):
+        for squirrel in squirrels:
+            if abs(squirrel.x - self.x) <= 1 and abs(squirrel.y - self.y) <= 1:
+                squirrel.health -= 0.5
+
+
+class House(GameObject):
+    def __init__(self, x, y):
+        super().__init__(x, y, RED, 10)
+        self.sand_dollars = 0
+        self.timer = 0
+
+    def produce_sand_dollars(self):
+        self.timer += 1
+        if self.timer >= FPS * 10:  # 10 seconds
+            self.sand_dollars += 1
+            self.timer = 0
+
+
+class Squirrel(GameObject):
+    def __init__(self, x, y):
+        super().__init__(x, y, GRAY, 1)
+        self.timer = 0
+
+    def move_toward_target(self, target):
+        if self.timer < FPS * 2:  # Move every 2 seconds
+            self.timer += 1
+            return
+
+        self.timer = 0
+        dx = target.x - self.x
+        dy = target.y - self.y
+
+        if abs(dx) > abs(dy):
+            self.x += 1 if dx > 0 else -1
+        else:
+            self.y += 1 if dy > 0 else -1
+
+
+class Coral(GameObject):
+    def __init__(self, x, y):
+        super().__init__(x, y, GREEN, 10)
+        self.range = 1
+
+    def attack(self, squirrels):
+        for squirrel in squirrels:
+            if (
+                abs(squirrel.x - self.x) <= self.range
+                and abs(squirrel.y - self.y) <= self.range
+            ):
+                squirrel.health -= 1
+
+
+# Game class
 class Game:
-    def __init__(self, dims, fps=60):
-        pg.init()
-        self.width, self.height = dims
-        self.fps = fps
-        self.screen = pg.display.set_mode(dims)
-        self.clock = pg.time.Clock()
-        self.delta_time = 1
-        self.glob_event = pg.USEREVENT
-        self.glob_trigger = False
-        pg.time.set_timer(self.glob_event, 40)
-        self._end = False
+    def __init__(self):
+        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        pygame.display.set_caption("Goblin Shark Defense")
+        self.clock = pygame.time.Clock()
+        self.grid = [[None for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
+        self.goblin_shark = GoblinShark(GRID_SIZE // 2, GRID_SIZE // 2)
+        self.house = House(GRID_SIZE // 2, GRID_SIZE // 2)
+        self.squirrels = []
+        self.corals = []
 
-        self.background = pg.transform.scale(
-            pg.image.load("GameLib/Assets/background.png").convert_alpha(), dims
+    def spawn_squirrel(self):
+        x, y = random.choice(
+            [
+                (0, random.randint(0, GRID_SIZE - 1)),
+                (GRID_SIZE - 1, random.randint(0, GRID_SIZE - 1)),
+                (random.randint(0, GRID_SIZE - 1), 0),
+                (random.randint(0, GRID_SIZE - 1), GRID_SIZE - 1),
+            ]
         )
+        self.squirrels.append(Squirrel(x, y))
 
-        self.running = False
-        self.font = pg.font.SysFont("Consolas", 25)
+    def draw_grid(self):
+        for x in range(GRID_SIZE):
+            for y in range(GRID_SIZE):
+                rect = pygame.Rect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE)
+                pygame.draw.rect(self.screen, WHITE, rect, 1)
 
-        self.start_button = Button(150, 400, 150, 50)
-        self.options_button = Button(350, 400, 150, 50)
-        self.coral_button = Button(150, 400, 150, 50)
-        self.frame_count = 0
+    def handle_events(self):
+        keys = pygame.key.get_pressed()
+        if keys[K_w]:
+            self.goblin_shark.move(0, -1)
+        if keys[K_s]:
+            self.goblin_shark.move(0, 1)
+        if keys[K_a]:
+            self.goblin_shark.move(-1, 0)
+        if keys[K_d]:
+            self.goblin_shark.move(1, 0)
 
-    def init(self):
-        self.map = Map.get_map(self)
-
-        # Get the directory where the current script is located
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-
-        # Initialize music
-        music_file = "Squirrely Pop MainTheme.mp3"
-        music_path = os.path.join(base_dir, "Assets", "music", music_file)
-
-        if not os.path.exists(music_path):
-            print(f"Error: Music file '{music_file}' not found.")
-            sys.exit(1)
-
-        self.music = pg.mixer.Sound(music_path)
-        self.music.play(loops=-1)  # Play the music on a loop
-
-        # Player setup
-        walk_dir = os.path.join(base_dir, "Assets", "player", "walk")
-        walk_images = [
-            os.path.join(walk_dir, f)
-            for f in sorted(os.listdir(walk_dir))
-            if f.endswith(".png")
-        ]
-
-        if not walk_images:
-            print(f"Error: No images found in '{walk_dir}' for walking animation.")
-            sys.exit(1)
-
-        self.player = Player(
-            self,
-            5,
-            3,
-            walk_images[0],
-            "GameLib/Assets/player",
-            (self.map[0][0].x, self.map[0][0].y),
-            120,
-            [0, 0],
-            0,
-            "walk",
-            "attack",
-        )
-
-        # Load the house sprite
-        house_sprite_path = os.path.join(base_dir, "Assets", "House.png")
-        if not os.path.exists(house_sprite_path):
-            print(f"Error: File '{house_sprite_path}' not found.")
-            sys.exit(1)
-
-        self.house = House(
-            self,
-            5,
-            house_sprite_path,
-            "Assets",
-            (self.map[5][5].x, self.map[5][5].y),
-            120,
-            [5, 5],
-            "xxx",
-        )
-
-        self.enemyManager = EnemyManager(self, 900, 5000)
-
-        # Initialize the sound manager
-        sounds_dir = os.path.join(base_dir, "Assets", "sounds")
-        self.sound_manager = SoundManager(sounds_dir)
-
-        self.coral_manager = CoralManager(self)
-
-    def check_events(self):
-        self.glob_trigger = False
-        self.click = False
-        for e in pg.event.get():
-            if e.type == pg.QUIT:
-                pg.quit()
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
                 sys.exit()
-            elif e.type == self.glob_event:
-                self.glob_trigger = True
-
-    def draw_map(self):
-        for i in range(len(self.map)):
-            for j in range(len(self.map[i])):
-                self.map[i][j].draw()
+            if event.type == MOUSEBUTTONDOWN and event.button == 1:
+                self.goblin_shark.attack(self.squirrels)
 
     def update(self):
-        self.frame_count += 1
-        pg.display.flip()
-        self.delta_time = self.clock.tick(self.fps)
-        pg.display.set_caption(f"SquirrelyPop")
+        self.house.produce_sand_dollars()
 
-    def game(self):
-        self.running = True
-        while self.running:
-            self.screen.blit(self.background, (0, 0))
-            self.start_button.draw(self.screen)
-            self.draw_map()
-            self.player.update()
-            self.house.update()
-            self.enemyManager.update()
-            self.coral_manager.update_coral()
-            self.check_events()
-            self.update()
+        for squirrel in self.squirrels:
+            squirrel.move_toward_target(self.house)
 
+        for coral in self.corals:
+            coral.attack(self.squirrels)
 
-    def options(self):
-        self.running = True
-        while self.running:
-            self.screen.fill((0, 0, 0))
-            self.draw_text(
-                "Press ESC for Main Menu",
-                self.font,
-                (255, 255, 255),
-                self.screen,
-                int(self.width / 2) - 160,
-                20,
-            )
-            self.check_events()
-            self.update()
+        self.squirrels = [s for s in self.squirrels if s.health > 0]
+
+    def draw(self):
+        self.screen.fill(BLACK)
+        self.draw_grid()
+
+        self.house.draw(self.screen)
+        self.goblin_shark.draw(self.screen)
+
+        for squirrel in self.squirrels:
+            squirrel.draw(self.screen)
+
+        for coral in self.corals:
+            coral.draw(self.screen)
+
+        # Draw below-grid menu
+        pygame.draw.rect(self.screen, GRAY, (0, SCREEN_WIDTH, SCREEN_WIDTH, 100))
+        font = pygame.font.Font(None, 36)
+        sand_dollars_text = font.render(
+            f"Sand Dollars: {self.house.sand_dollars}", True, WHITE
+        )
+        self.screen.blit(sand_dollars_text, (10, SCREEN_WIDTH + 10))
 
     def run(self):
-        self.init()
-        self.game()
+        while True:
+            self.handle_events()
+            self.update()
+            self.draw()
+            pygame.display.flip()
+            self.clock.tick(FPS)
 
 
 if __name__ == "__main__":
-    game = Game((1280, 720))
+    game = Game()
     game.run()
