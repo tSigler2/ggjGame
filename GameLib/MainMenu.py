@@ -1,5 +1,6 @@
 import pygame as pg
-from Game import Game
+import subprocess
+import os
 from Settings import SettingsMenu
 
 
@@ -70,9 +71,11 @@ class MainMenu:
 
     def start_game(self):
         """
-        Start the game.
+        Start the game by launching Game.py.
         """
-        self.game.start_game()
+        game_path = os.path.join(os.path.dirname(__file__), 'Game.py')
+        subprocess.Popen(['python', game_path])  # Ensure the correct path is passed
+        self.game.running = False  # Stop the main menu
 
     def open_settings(self):
         """
