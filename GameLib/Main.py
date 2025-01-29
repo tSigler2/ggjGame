@@ -30,7 +30,7 @@ class Main:
         self.internal_surface = pg.Surface((self.internal_width, self.internal_height))
         self.screen = pg.display.set_mode((self.screen_width, self.screen_height))
         pg.display.set_caption(
-            "Bubble Blast Deluxe Unlimited Edition ft. Glasscord Team"
+            "Squirrely Pop: The Last Stand"
         )
 
         # Game state

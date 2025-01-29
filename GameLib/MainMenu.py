@@ -75,21 +75,14 @@ class MainMenu:
         """
         Start the game by launching Game.py.
         """
-        game_path = os.path.join(os.path.dirname(__file__), "Game.py")
-        subprocess.Popen(["python", game_path])  # Launch the game script
-        self.game.running = False  # Stop the main menu
+        self.game.current_menu = "game"
+        self.game.game.init()
 
     def open_settings(self):
         """
         Open the settings menu by launching Settings.py.
         """
-        settings_menu = SettingsMenu(
-            self.game.internal_surface, self.game.clock, self.game.settings
-        )
-        settings_menu.run()  # Run the settings menu in the same loop
-        self.game.running = (
-            True  # The main menu continues after returning from settings
-        )
+        self.game.current_menu = "settings"
 
     def quit_game(self):
         """
@@ -147,7 +140,7 @@ class MainMenu:
         """
         Run the main menu loop.
         """
-        while self.game.running:
+        while self.game.running and self.game.current_menu == "main":
             self.handle_events()
             self.draw(self.game.internal_surface)
             self.clock.tick(self.game.fps)  # Use the clock passed from Main
