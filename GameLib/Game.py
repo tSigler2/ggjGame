@@ -107,11 +107,15 @@ class Coral(GameObject):
 
 # Game class
 class Game:
-    def __init__(self):
+
+    def __init__(self, main):
+        self.main = main
+        self.screen = main.screen
+        self.clock = main.clock
+
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption("Squirrely Pop: The Last Stand")
         self.running = True
-        self.clock = pygame.time.Clock()
         self.grid = [[None for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
         self.goblin_shark = GoblinShark(GRID_SIZE // 2, GRID_SIZE // 2)
         self.house = House(GRID_SIZE // 2, GRID_SIZE // 2)

@@ -1,40 +1,129 @@
+import pygame as pg
 from MainMenu import MainMenu
-import pygame
-
-# Initialize Pygame
-pygame.init()
-
-# Set up the screen
-screen_width, screen_height = 800, 600
-screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption("Main Menu")
+from Game import Game
+from SettingsMenu import SettingsMenu
 
 
-# Create the game object (dummy for this example)
-class Game:
+class Main:
+    """
+    The Main class serves as the entry point for the game.
+    It initializes Pygame, sets up the game loop, and manages the main menu and game states.
+    """
 
     def __init__(self):
-        # Initialize pygame and other necessary game components
-        pygame.init()
-        self.screen = pygame.display.set_mode((screen_width, screen_height))
-        self.clock = pygame.time.Clock()
-        self.running = True
+        """
+        Initialize the game.
+        """
+        # Initialize Pygame
+        pg.init()
 
-        # Initialize settings (could be a dictionary or a custom class)
-        self.settings = {
-            "volume": 100,
-            "resolution": (screen_width, screen_height),
-            # Add other settings you may need here
-        }
+        # Set up the screen
+        self.internal_width = 320  # Internal resolution (320x240)
+        self.internal_height = 240
+        self.scale_factor = 4  # Scale factor for pixelated effect
+        self.screen_width = (
+            self.internal_width * self.scale_factor
+        )  # Window size (1280x960)
+        self.screen_height = self.internal_height * self.scale_factor
+
+        # Create the internal surface and the scaled-up window
+        self.internal_surface = pg.Surface((self.internal_width, self.internal_height))
+        self.screen = pg.display.set_mode((self.screen_width, self.screen_height))
+        pg.display.set_caption(
+            "Bubble Blast Deluxe Unlimited Edition ft. Glasscord Team"
+        )
+
+        # Game state
+        self.running = True
+        self.current_menu = "main"  # Current menu state ("main", "settings", "game")
+        self.clock = pg.time.Clock()
+        self.fps = 60
+
+        # Initialize game components
+        self.game = Game(self)  # Pass the Main instance to Game
+        self.main_menu = MainMenu(
+            self, self.internal_width, self.internal_height, self.clock
+        )  # Pass clock
+        self.settings_menu = SettingsMenu(
+            self, self.internal_width, self.internal_height
+        )
+
+    def run(self):
+        """
+        Run the game loop.
+        """
+        while self.running:
+            self.handle_events()
+            self.update()
+            self.draw()
+            self.clock.tick(self.fps)
+
+        # Quit Pygame
+        pg.quit()
+
+    def handle_events(self):
+        """
+        Handle user input events.
+        """
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                self.running = False
+
+    def update(self):
+        """
+        Update the game state based on the current menu.
+        """
+        if self.current_menu == "main":
+            self.main_menu.handle_events()
+        elif self.current_menu == "settings":
+            self.settings_menu.handle_events()
+        elif self.current_menu == "game":
+            self.game.update()
+
+    def draw(self):
+        """
+        Draw the current menu or game state.
+        """
+        # Clear the internal surface
+        self.internal_surface.fill((0, 0, 0))
+
+        # Draw the current menu or game state to the internal surface
+        if self.current_menu == "main":
+            self.main_menu.draw(self.internal_surface)
+        elif self.current_menu == "settings":
+            self.settings_menu.draw(self.internal_surface)
+        elif self.current_menu == "game":
+            self.game.draw(self.internal_surface)
+
+        # Scale the internal surface to the window size
+        scaled_surface = pg.transform.scale(
+            self.internal_surface, (self.screen_width, self.screen_height)
+        )
+        self.screen.blit(scaled_surface, (0, 0))
+
+        pg.display.flip()
 
     def start_game(self):
-        print("Starting the game...")
-        
-game = Game()
+        """
+        Start the game.
+        """
+        self.current_menu = "game"
+        self.game.init()
 
-# Create and run the main menu
-main_menu = MainMenu(game, screen_width, screen_height, game.clock)
-main_menu.run()
+    def open_settings(self):
+        """
+        Open the settings menu.
+        """
+        self.current_menu = "settings"
 
-# Quit Pygame
-pygame.quit()
+    def quit_game(self):
+        """
+        Quit the game.
+        """
+        self.running = False
+
+
+if __name__ == "__main__":
+    # Create and run the game
+    main = Main()
+    main.run()

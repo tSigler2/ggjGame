@@ -1,7 +1,7 @@
 import pygame as pg
 import subprocess
 import os
-from Settings import SettingsMenu
+from SettingsMenu import SettingsMenu
 
 
 class MainMenu:
@@ -17,12 +17,13 @@ class MainMenu:
             game: The main game object.
             screen_width: Width of the screen.
             screen_height: Height of the screen.
+            clock: Pygame clock object for managing frame rate.
         """
         self.game = game
         self.screen_width = screen_width
         self.screen_height = screen_height
-        self.clock = clock  # Use the clock passed from Game
-        self.font = pg.font.SysFont("Consolas", 40)
+        self.clock = clock  # Use the clock passed from Main
+        self.font = pg.font.SysFont("Consolas", 20)  # Smaller font for pixelated feel
         self.buttons = self.create_buttons()
 
     def create_buttons(self) -> list:
@@ -32,9 +33,9 @@ class MainMenu:
         Returns:
             A list of button dictionaries, each containing a rect and text.
         """
-        button_width = 200
-        button_height = 50
-        button_spacing = 20
+        button_width = 100  # Smaller buttons for pixelated feel
+        button_height = 30
+        button_spacing = 10
 
         buttons = [
             {
@@ -75,7 +76,7 @@ class MainMenu:
         Start the game by launching Game.py.
         """
         game_path = os.path.join(os.path.dirname(__file__), "Game.py")
-        subprocess.Popen(["python", game_path])  # Launch the games script
+        subprocess.Popen(["python", game_path])  # Launch the game script
         self.game.running = False  # Stop the main menu
 
     def open_settings(self):
@@ -83,11 +84,11 @@ class MainMenu:
         Open the settings menu by launching Settings.py.
         """
         settings_menu = SettingsMenu(
-            self.game.screen, self.game.clock, self.game.settings
+            self.game.internal_surface, self.game.clock, self.game.settings
         )
         settings_menu.run()  # Run the settings menu in the same loop
         self.game.running = (
-            True  # the main menu continues after returning from settings
+            True  # The main menu continues after returning from settings
         )
 
     def quit_game(self):
@@ -114,26 +115,33 @@ class MainMenu:
         Args:
             mouse_pos: Position of the mouse click (x, y).
         """
+        # Scale the mouse position to the internal resolution
+        scaled_mouse_pos = (
+            mouse_pos[0] // self.game.scale_factor,
+            mouse_pos[1] // self.game.scale_factor,
+        )
+
         for button in self.buttons:
-            if button["rect"].collidepoint(mouse_pos):
+            if button["rect"].collidepoint(scaled_mouse_pos):
                 button["action"]()
 
-    def draw(self):
+    def draw(self, surface):
         """
         Draw the main menu, including buttons and text.
+
+        Args:
+            surface: The surface to draw on (internal surface).
         """
-        self.game.screen.fill((30, 30, 30))  # Dark gray background
+        surface.fill((30, 30, 30))  # Dark gray background
 
         # Draw buttons
         for button in self.buttons:
-            pg.draw.rect(self.game.screen, (0, 0, 255), button["rect"])  # Blue button
+            pg.draw.rect(surface, (0, 0, 255), button["rect"])  # Blue button
             text_surface = self.font.render(
                 button["text"], True, (255, 255, 255)
             )  # White text
             text_rect = text_surface.get_rect(center=button["rect"].center)
-            self.game.screen.blit(text_surface, text_rect)
-
-        pg.display.flip()
+            surface.blit(text_surface, text_rect)
 
     def run(self):
         """
@@ -141,4 +149,5 @@ class MainMenu:
         """
         while self.game.running:
             self.handle_events()
-            self.draw()
+            self.draw(self.game.internal_surface)
+            self.clock.tick(self.game.fps)  # Use the clock passed from Main
