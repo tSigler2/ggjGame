@@ -1,4 +1,3 @@
-# File: GameLib\Game.py
 import pygame as pg
 import random
 
@@ -6,10 +5,12 @@ import random
 pg.init()
 
 # Constants
-GRID_SIZE = 11
-CELL_SIZE = 50
-SCREEN_WIDTH = GRID_SIZE * CELL_SIZE
-SCREEN_HEIGHT = SCREEN_WIDTH + 100  # Extra space for the menu
+GRID_SIZE = 11  # 11x11 grid
+SCREEN_WIDTH = 320  # Width of the screen
+SCREEN_HEIGHT = 240  # Height of the screen
+UI_BAR_HEIGHT = 40  # Height of the UI bar at the bottom
+GRID_HEIGHT = SCREEN_HEIGHT - UI_BAR_HEIGHT  # Height of the grid area
+CELL_SIZE = GRID_HEIGHT // GRID_SIZE  # Calculate cell size based on grid height
 FPS = 60
 
 # Colors
@@ -39,16 +40,11 @@ class Game:
         self.running = True
 
         # Game objects
-        self.grid = [
-            [None for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)
-        ]  # 11x11 grid
-        self.player = Player(
-            GRID_SIZE // 2, GRID_SIZE // 2
-        )  # Player starts in the center
-        self.house = House(GRID_SIZE // 2, GRID_SIZE // 2)  # House starts in the center
-        self.squirrels = []  # List of squirrels (enemies)
-        self.corals = []  # List of corals (defensive structures)
-        self.sand_dollars = 0  # Sand dollar counter
+        self.grid = [[None for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
+        self.goblin_shark = GoblinShark(GRID_SIZE // 2, GRID_SIZE // 2)
+        self.house = House(GRID_SIZE // 2, GRID_SIZE // 2)
+        self.squirrels = []
+        self.corals = []
 
     def init(self):
         """
@@ -62,15 +58,12 @@ class Game:
         """
         self.house.produce_sand_dollars()
 
-        # Update squirrels
         for squirrel in self.squirrels:
             squirrel.move_toward_target(self.house)
 
-        # Update corals
         for coral in self.corals:
             coral.attack(self.squirrels)
 
-        # Remove dead squirrels
         self.squirrels = [s for s in self.squirrels if s.health > 0]
 
     def draw(self, surface):
@@ -80,31 +73,29 @@ class Game:
         Args:
             surface: The surface to draw on (internal surface).
         """
-        surface.fill(BLACK)  # Clear the screen
-
-        # Draw the grid
+        surface.fill(BLACK)
         self.draw_grid(surface)
 
-        # Draw the house
         self.house.draw(surface)
+        self.goblin_shark.draw(surface)
 
-        # Draw the player
-        self.player.draw(surface)
-
-        # Draw squirrels
         for squirrel in self.squirrels:
             squirrel.draw(surface)
 
-        # Draw corals
         for coral in self.corals:
             coral.draw(surface)
 
-        # Draw the sand dollar counter
-        self.draw_sand_dollar_counter(surface)
+        # Draw UI bar at the bottom
+        pg.draw.rect(surface, GRAY, (0, GRID_HEIGHT, SCREEN_WIDTH, UI_BAR_HEIGHT))
+        font = pg.font.SysFont("Consolas", 16)
+        sand_dollars_text = font.render(
+            f"Sand Dollars: {self.house.sand_dollars}", True, WHITE
+        )
+        surface.blit(sand_dollars_text, (10, GRID_HEIGHT + 10))
 
     def draw_grid(self, surface):
         """
-        Draw the 11x11 grid on the surface.
+        Draw the grid on the surface.
 
         Args:
             surface: The surface to draw on (internal surface).
@@ -117,54 +108,27 @@ class Game:
                     CELL_SIZE,
                     CELL_SIZE,
                 )
-                pg.draw.rect(surface, WHITE, rect, 1)  # Draw grid lines
-
-    def draw_sand_dollar_counter(self, surface):
-        """
-        Draw the sand dollar counter bar at the bottom of the screen.
-
-        Args:
-            surface: The surface to draw on (internal surface).
-        """
-        # Draw the bar background
-        pg.draw.rect(
-            surface,
-            GRAY,
-            (0, SCREEN_HEIGHT - 100, SCREEN_WIDTH, 100),
-        )
-
-        # Draw the sand dollar counter text
-        font = pg.font.SysFont("Consolas", 24)
-        text_surface = font.render(f"Sand Dollars: {self.sand_dollars}", True, WHITE)
-        surface.blit(
-            text_surface,
-            (10, SCREEN_HEIGHT - 80),
-        )
+                pg.draw.rect(surface, WHITE, rect, 1)
 
     def handle_events(self, event):
         """
         Handle user input events.
         """
         keys = pg.key.get_pressed()
-
-        # Player movement
         if keys[pg.K_w]:
-            self.player.move(0, -1)
+            self.goblin_shark.move(0, -1)
         if keys[pg.K_s]:
-            self.player.move(0, 1)
+            self.goblin_shark.move(0, 1)
         if keys[pg.K_a]:
-            self.player.move(-1, 0)
+            self.goblin_shark.move(-1, 0)
         if keys[pg.K_d]:
-            self.player.move(1, 0)
+            self.goblin_shark.move(1, 0)
 
-        # Player attack
-        if keys[pg.K_SPACE]:
-            self.player.attack(self.squirrels)
-
-        # Quit the game
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.running = False
+            if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
+                self.goblin_shark.attack(self.squirrels)
 
     def run(self):
         """
@@ -175,36 +139,39 @@ class Game:
             self.update()
             self.draw(self.internal_surface)
             pg.display.flip()
-            self.clock.tick(FPS)
+            self.clock.tick(self.main.fps)
 
 
-class Player:
+class GameObject:
     """
-    The Player class represents the player character.
+    The GameObject class represents a generic game object.
+    """
+
+    def __init__(self, x, y, color, health):
+        self.x = x
+        self.y = y
+        self.color = color
+        self.health = health
+
+    def draw(self, surface):
+        pg.draw.rect(
+            surface,
+            self.color,
+            (self.x * CELL_SIZE, self.y * CELL_SIZE, CELL_SIZE, CELL_SIZE),
+        )
+
+
+class GoblinShark(GameObject):
+    """
+    The GoblinShark class represents the player character.
     """
 
     def __init__(self, x, y):
-        """
-        Initialize the player.
-
-        Args:
-            x: Initial x-coordinate on the grid.
-            y: Initial y-coordinate on the grid.
-        """
-        self.x = x
-        self.y = y
-        self.color = BLUE
-        self.health = 5
+        super().__init__(x, y, BLUE, 5)
         self.energy = 5
+        self.cooldown = 0  # Cooldown for planting/moving corals
 
     def move(self, dx, dy):
-        """
-        Move the player on the grid.
-
-        Args:
-            dx: Change in x-coordinate.
-            dy: Change in y-coordinate.
-        """
         new_x = self.x + dx
         new_y = self.y + dy
         if 0 <= new_x < GRID_SIZE and 0 <= new_y < GRID_SIZE:
@@ -212,99 +179,38 @@ class Player:
             self.y = new_y
 
     def attack(self, squirrels):
-        """
-        Attack squirrels within range.
-
-        Args:
-            squirrels: List of squirrels to attack.
-        """
         for squirrel in squirrels:
             if abs(squirrel.x - self.x) <= 1 and abs(squirrel.y - self.y) <= 1:
                 squirrel.health -= 0.5
 
-    def draw(self, surface):
-        """
-        Draw the player on the screen.
 
-        Args:
-            surface: The surface to draw on (internal surface).
-        """
-        pg.draw.rect(
-            surface,
-            self.color,
-            (self.x * CELL_SIZE, self.y * CELL_SIZE, CELL_SIZE, CELL_SIZE),
-        )
-
-
-class House:
+class House(GameObject):
     """
     The House class represents the player's house.
     """
 
     def __init__(self, x, y):
-        """
-        Initialize the house.
-
-        Args:
-            x: Initial x-coordinate on the grid.
-            y: Initial y-coordinate on the grid.
-        """
-        self.x = x
-        self.y = y
-        self.color = RED
-        self.health = 10
+        super().__init__(x, y, RED, 10)
         self.sand_dollars = 0
         self.timer = 0
 
     def produce_sand_dollars(self):
-        """
-        Produce sand dollars over time.
-        """
         self.timer += 1
         if self.timer >= FPS * 10:  # 10 seconds
             self.sand_dollars += 1
             self.timer = 0
 
-    def draw(self, surface):
-        """
-        Draw the house on the screen.
 
-        Args:
-            surface: The surface to draw on (internal surface).
-        """
-        pg.draw.rect(
-            surface,
-            self.color,
-            (self.x * CELL_SIZE, self.y * CELL_SIZE, CELL_SIZE, CELL_SIZE),
-        )
-
-
-class Squirrel:
+class Squirrel(GameObject):
     """
     The Squirrel class represents an enemy.
     """
 
     def __init__(self, x, y):
-        """
-        Initialize the squirrel.
-
-        Args:
-            x: Initial x-coordinate on the grid.
-            y: Initial y-coordinate on the grid.
-        """
-        self.x = x
-        self.y = y
-        self.color = GRAY
-        self.health = 1
+        super().__init__(x, y, GRAY, 1)
         self.timer = 0
 
     def move_toward_target(self, target):
-        """
-        Move the squirrel toward the target (house).
-
-        Args:
-            target: The target to move toward (house).
-        """
         if self.timer < FPS * 2:  # Move every 2 seconds
             self.timer += 1
             return
@@ -318,62 +224,20 @@ class Squirrel:
         else:
             self.y += 1 if dy > 0 else -1
 
-    def draw(self, surface):
-        """
-        Draw the squirrel on the screen.
 
-        Args:
-            surface: The surface to draw on (internal surface).
-        """
-        pg.draw.rect(
-            surface,
-            self.color,
-            (self.x * CELL_SIZE, self.y * CELL_SIZE, CELL_SIZE, CELL_SIZE),
-        )
-
-
-class Coral:
+class Coral(GameObject):
     """
     The Coral class represents a defensive structure.
     """
 
     def __init__(self, x, y):
-        """
-        Initialize the coral.
-
-        Args:
-            x: Initial x-coordinate on the grid.
-            y: Initial y-coordinate on the grid.
-        """
-        self.x = x
-        self.y = y
-        self.color = GREEN
-        self.health = 10
+        super().__init__(x, y, GREEN, 10)
         self.range = 1
 
     def attack(self, squirrels):
-        """
-        Attack squirrels within range.
-
-        Args:
-            squirrels: List of squirrels to attack.
-        """
         for squirrel in squirrels:
             if (
                 abs(squirrel.x - self.x) <= self.range
                 and abs(squirrel.y - self.y) <= self.range
             ):
                 squirrel.health -= 1
-
-    def draw(self, surface):
-        """
-        Draw the coral on the screen.
-
-        Args:
-            surface: The surface to draw on (internal surface).
-        """
-        pg.draw.rect(
-            surface,
-            self.color,
-            (self.x * CELL_SIZE, self.y * CELL_SIZE, CELL_SIZE, CELL_SIZE),
-        )
