@@ -102,7 +102,7 @@ class SettingsMenu:
             f"Difficulty set to: {self.difficulty_levels[self.current_difficulty_index]}"
         )
 
-    def handle_events(self):
+    def handle_events(self, event):
         """
         Handle user input events.
         """
@@ -144,11 +144,11 @@ class SettingsMenu:
                 if slider["type"] == "volume":
                     self.game.sound_manager.set_volume(slider["value"] / 100)
 
-    def draw(self):
+    def draw(self, surface):
         """
         Draw the settings menu, including buttons, sliders, and text.
         """
-        self.game.screen.fill((30, 30, 30))  # Dark gray background
+        surface.fill((50, 50, 50))  # Dark gray background
 
         # Draw buttons
         for button in self.buttons:
@@ -157,7 +157,7 @@ class SettingsMenu:
                 button["text"], True, (255, 255, 255)
             )  # White text
             text_rect = text_surface.get_rect(center=button["rect"].center)
-            self.game.screen.blit(text_surface, text_rect)
+            surface.blit(text_surface, text_rect)
 
         # Draw sliders
         for slider in self.sliders:

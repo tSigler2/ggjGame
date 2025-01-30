@@ -68,15 +68,23 @@ class Main:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.running = False
+            else:
+                if self.current_menu == "main":
+                    self.main_menu.handle_events(event)  # Pass event
+                elif self.current_menu == "settings":
+                    self.settings_menu.handle_events(event)
+                elif self.current_menu == "game":
+                    self.game.handle_events(event)
 
     def update(self):
         """
         Update the game state based on the current menu.
         """
         if self.current_menu == "main":
-            self.main_menu.handle_events()
+            for event in pg.event.get():
+                self.main_menu.handle_events(event)
         elif self.current_menu == "settings":
-            self.settings_menu.handle_events()
+            self.settings_menu.handle_events(event)
         elif self.current_menu == "game":
             self.game.update()
 

@@ -90,16 +90,16 @@ class MainMenu:
         """
         self.game.running = False
 
-    def handle_events(self):
+    def handle_events(self, event):
         """
         Handle user input events.
         """
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
-                self.game.running = False
-            elif event.type == pg.MOUSEBUTTONDOWN:
-                if event.button == 1:  # Left mouse button
-                    self.handle_click(event.pos)
+        if event.type == pg.QUIT:
+            self.game.running = False
+        elif event.type == pg.MOUSEBUTTONDOWN:
+            if event.button == 1:  # Left mouse button
+                self.handle_click(event.pos)
+
 
     def handle_click(self, mouse_pos: tuple):
         """
